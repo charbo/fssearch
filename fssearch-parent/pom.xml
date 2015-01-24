@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<!-- Licensed to Gaël Charbonnier (the "Author") under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. Author licenses this file to you 
+	under the Apache License, Version 2.0 (the "License"); you may not use this 
+	file except in compliance with the License. You may obtain a copy of the 
+	License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by 
+	applicable law or agreed to in writing, software distributed under the License 
+	is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+	KIND, either express or implied. See the License for the specific language 
+	governing permissions and limitations under the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.charbo</groupId>
+	<artifactId>fssearch</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Elasticsearch File System Search Site</name>
+	<!-- <url>https://github.com/dadoonet/fsriver/</url> -->
+	<!-- <description>FS River Plugin offers a simple way to index local files 
+		into elasticsearch.</description> -->
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+		<modules>
+	<module>fssearch-api</module>
+		</modules>
+
+	<properties>
+		<elasticsearch.version>1.4.0</elasticsearch.version>
+		<poi.version>3.10.1</poi.version>
+	</properties>
+	
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.elasticsearch</groupId>
+				<artifactId>elasticsearch</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${poi.version}</version>
+				<scope>compile</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>stax</groupId>
+						<artifactId>stax-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml-schemas</artifactId>
+				<version>${poi.version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-scratchpad</artifactId>
+				<version>${poi.version}</version>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>${tika.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-parsers</artifactId>
+				<version>${tika.version}</version>
+			</dependency>
+			<!--Dependency for parsing remote ssh directory [http://www.jcraft.com/jsch/] -->
+			<dependency>
+				<groupId>com.jcraft</groupId>
+				<artifactId>jsch</artifactId>
+				<version>0.1.51</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<developers>
+		<developer>
+			<id>charbo</id>
+			<name>Gaël Charbonnier</name>
+			<email>gael.charbonnier@gmail.com</email>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	
+
+	<!-- <scm> -->
+	<!-- <connection>scm:git:git@github.com:dadoonet/fsriver.git</connection> -->
+	<!-- <url>scm:git:git@github.com:dadoonet/fsriver.git</url> -->
+	<!-- <developerConnection>scm:git:git@github.com:dadoonet/fsriver.git</developerConnection> -->
+	<!-- </scm> -->
+
+	<!-- <issueManagement> -->
+	<!-- <system>GitHub</system> -->
+	<!-- <url>https://github.com/dadoonet/fsriver/issues/</url> -->
+	<!-- </issueManagement> -->
+
+<!-- 	<build> -->
+<!-- 		<plugins> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
+<!-- 				<version>2.3.2</version> -->
+<!-- 				<configuration> -->
+<!-- 					<source>1.7</source> -->
+<!-- 					<target>1.7</target> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-javadoc-plugin</artifactId> -->
+<!-- 				<version>2.8</version> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-source-plugin</artifactId> -->
+<!-- 				<version>2.1.2</version> -->
+<!-- 			</plugin> -->
+			<!-- Add/Edit items in META-INF/MANIFEST.MF -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-jar-plugin</artifactId> -->
+<!-- 				<version>2.3.2</version> -->
+<!-- 			</plugin> -->
+			<!-- Copy dependencies into lib folder -->
+			<!-- To see full classpath use mvn dependency:build-classpath -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-dependency-plugin</artifactId> -->
+<!-- 				<version>2.3</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>copy-dependencies</id> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>copy-dependencies</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<outputDirectory>${project.build.directory}/lib</outputDirectory> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-surefire-plugin</artifactId> -->
+<!-- 				<version>2.13</version> -->
+<!-- 				<configuration> -->
+<!-- 					<skip>true</skip> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+
+			<!-- Generate the release zip file (run during package step) -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-assembly-plugin</artifactId> -->
+<!-- 				<version>2.3</version> -->
+<!-- 				<configuration> -->
+<!-- 					<appendAssemblyId>false</appendAssemblyId> -->
+<!-- 					<outputDirectory>${project.build.directory}/releases/</outputDirectory> -->
+<!-- 					<descriptors> -->
+<!-- 						<descriptor>${basedir}/src/main/assemblies/esplugin.xml</descriptor> -->
+<!-- 					</descriptors> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>generate-release-plugin</id> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>single</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-enforcer-plugin</artifactId> -->
+<!-- 				<version>1.3.1</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>enforce-versions</id> -->
+<!-- 						<goals> -->
+<!-- 							<goal>enforce</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<rules> -->
+<!-- 								<requireJavaVersion> -->
+<!-- 									<version>[1.7,)</version> -->
+<!-- 								</requireJavaVersion> -->
+<!-- 							</rules> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+<!-- 		</plugins> -->
+<!-- 		<resources> -->
+<!-- 			<resource> -->
+<!-- 				<directory>src/main/resources</directory> -->
+<!-- 				<filtering>true</filtering> -->
+<!-- 				<includes> -->
+<!-- 					<include>**/*.properties</include> -->
+<!-- 				</includes> -->
+<!-- 			</resource> -->
+<!-- 		</resources> -->
+<!-- 	</build> -->
+
+	
+	<packaging>pom</packaging>
+</project>
