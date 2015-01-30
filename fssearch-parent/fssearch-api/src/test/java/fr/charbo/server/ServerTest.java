@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,9 @@ public class ServerTest {
   @Autowired
   private Server server;
 
+  @Autowired
+  private River river;
+
   /** The path. */
   @Value("${fssearch.elastisearch.server.path}")
   private String path;
@@ -39,15 +43,22 @@ public class ServerTest {
    */
   @Test
   public void testInit() throws Exception {
-    server.start();
-    assertTrue(server.isRunning());
+    this.server.start();
+    assertTrue(this.server.isRunning());
 
-    assertNotNull(server.getClient());
+    assertNotNull(this.server.getClient());
 
-    server.stop();
-    assertFalse(server.isRunning());
+    this.server.stop();
+    assertFalse(this.server.isRunning());
 
-    FileSystemUtils.deleteRecursively(new File(path));
+    FileSystemUtils.deleteRecursively(new File(this.path));
+  }
+
+  @Test
+  public void testAddRiver() throws Exception {
+    final IndexResponse response = this.server.addRiver(this.river);
+    System.out.println(response.isCreated());
+
   }
 
 }

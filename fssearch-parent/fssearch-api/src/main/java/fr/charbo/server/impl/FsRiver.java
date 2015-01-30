@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fr.charbo.server.River;
@@ -37,7 +39,9 @@ public class FsRiver implements River {
    * @param rootPath the root path
    * @param updateRate the update rate
    */
-  public FsRiver(final String name, final String rootPath, final Integer updateRate) {
+  @Autowired
+  public FsRiver(@Value("${fssearch.default.river.name}") final String name, @Value("${fssearch.default.river.path}") final String rootPath,
+      @Value("${fssearch.default.river.update.rate}") final Integer updateRate) {
     this.name = name;
     this.rootPath = rootPath;
     this.updateRate = updateRate;
@@ -118,7 +122,7 @@ public class FsRiver implements River {
     if (!this.storedType.isEmpty()) {
       river.array("includes", this.storedType.toArray());
     }
-    river.endObject().startObject("index").field("index", this.name).endObject().endObject();
+    river.endObject().startObject("index").field("bulk_size", 1).field("index", this.name).endObject().endObject();
 
 
     return river;

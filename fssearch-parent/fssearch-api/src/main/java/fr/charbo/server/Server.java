@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.index.IndexResponse;
 
 /**
  * The Interface Server.
@@ -38,10 +39,11 @@ public interface Server {
    * Adds the river.
    *
    * @param river the river
-   * @throws IOException
-   * @throws ElasticsearchException
+   * @return the index response
+   * @throws ElasticsearchException the elasticsearch exception
+   * @throws IOException Signals that an I/O exception has occurred.
    */
-  void addRiver(River river) throws ElasticsearchException, IOException;
+  IndexResponse addRiver(River river) throws ElasticsearchException, IOException;
 
   /**
    * Update river.

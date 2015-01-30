@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.node.Node;
@@ -35,7 +36,7 @@ public class ElasticServer implements Server {
    */
   @Autowired
   public ElasticServer(@Value("${fssearch.elastisearch.server.path}") final String path) {
-    this.node = NodeBuilder.nodeBuilder().settings(ImmutableSettings.builder().put("path.data", path).build()).build();
+    this.node = NodeBuilder.nodeBuilder().settings(ImmutableSettings.builder().put("path.data", path).build()).node();
     this.client = new ElasticClient(this.node);
   }
 
@@ -43,9 +44,9 @@ public class ElasticServer implements Server {
    * @see fr.charbo.server.Server#addRiver(fr.charbo.server.River)
    */
   @Override
-  public void addRiver(final River river) throws ElasticsearchException, IOException {
-    this.node.client().prepareIndex("_river", river.getName(), "_meta").setSource(river.getXContentBuilder()).execute().actionGet();
-    //TODO use IndexResponse as return type
+  public IndexResponse addRiver(final River river) throws ElasticsearchException, IOException {
+    //TODO change return type
+    return this.node.client().prepareIndex("_river", river.getName(), "_meta").setSource(river.getXContentBuilder()).execute().actionGet();
 
   }
 
