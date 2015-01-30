@@ -4,12 +4,22 @@ import org.elasticsearch.node.Node;
 
 import fr.charbo.server.Client;
 
+/**
+ * The Class ElasticClient.
+ */
 public class ElasticClient implements Client {
-	
-	private final Node node;
-	
-	public ElasticClient(Node node) {
-		this.node = node;
-	}
+
+  /** The node. */
+  private final Node node;
+
+  /**
+   * Instantiates a new elastic client.
+   *
+   * @param node the node
+   */
+  public ElasticClient(final Node node) {
+    this.node = node;
+  }
+
 
 }
