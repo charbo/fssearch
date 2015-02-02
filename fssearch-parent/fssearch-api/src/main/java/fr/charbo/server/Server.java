@@ -6,15 +6,13 @@ import java.util.concurrent.ExecutionException;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.index.IndexResponse;
 
+import fr.charbo.client.Client;
+
 /**
  * The Interface Server.
  */
 public interface Server {
 
-  /**
-   * Start.
-   */
-  void start();
 
   /**
    * Checks if is running.
@@ -23,10 +21,6 @@ public interface Server {
    */
   boolean isRunning();
 
-  /**
-   * Stop.
-   */
-  void stop();
 
   /**
    * Gets the client.
@@ -55,5 +49,10 @@ public interface Server {
    * @throws IOException
    */
   River updateRiver(River river) throws InterruptedException, ExecutionException, IOException;
+
+  /**
+   * Close the Node.
+   */
+  void close();
 
 }

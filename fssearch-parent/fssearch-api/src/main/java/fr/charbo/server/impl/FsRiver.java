@@ -4,6 +4,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -124,8 +125,32 @@ public class FsRiver implements River {
     }
     river.endObject().startObject("index").field("bulk_size", 1).field("index", this.name).endObject().endObject();
 
-
     return river;
   }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.name) ;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    final FsRiver other = (FsRiver) obj;
+    return Objects.equals(this.name, other.name);
+  }
+
+
 
 }

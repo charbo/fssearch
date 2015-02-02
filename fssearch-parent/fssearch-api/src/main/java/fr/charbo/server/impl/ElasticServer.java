@@ -1,6 +1,8 @@
 package fr.charbo.server.impl;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.ElasticsearchException;
@@ -13,7 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fr.charbo.server.Client;
+import fr.charbo.client.Client;
+import fr.charbo.client.ElasticClient;
 import fr.charbo.server.River;
 import fr.charbo.server.Server;
 
@@ -29,6 +32,11 @@ public class ElasticServer implements Server {
   /** The client. */
   private final Client client;
 
+  /** The is running. */
+  private boolean isRunning;
+
+  private final Set<River> rivers = new HashSet<River>();
+
   /**
    * Instantiates a new elastic server.
    *
@@ -37,6 +45,7 @@ public class ElasticServer implements Server {
   @Autowired
   public ElasticServer(@Value("${fssearch.elastisearch.server.path}") final String path) {
     this.node = NodeBuilder.nodeBuilder().settings(ImmutableSettings.builder().put("path.data", path).build()).node();
+    this.isRunning = true;
     this.client = new ElasticClient(this.node);
   }
 
@@ -45,7 +54,8 @@ public class ElasticServer implements Server {
    */
   @Override
   public IndexResponse addRiver(final River river) throws ElasticsearchException, IOException {
-    //TODO change return type
+    //TODO manage case when add return false
+    this.rivers.add(river);
     return this.node.client().prepareIndex("_river", river.getName(), "_meta").setSource(river.getXContentBuilder()).execute().actionGet();
 
   }
@@ -55,6 +65,7 @@ public class ElasticServer implements Server {
    */
   @Override
   public River updateRiver(final River river) throws InterruptedException, ExecutionException, IOException {
+    //TODO update rivers
     final UpdateRequest updateRequest = new UpdateRequest();
     updateRequest.index("_river");
     updateRequest.type(river.getName());
@@ -65,32 +76,23 @@ public class ElasticServer implements Server {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see fr.charbo.server.Server#start()
-   */
-  @Override
-  public void start() {
-    if (this.node.isClosed()) {
-      this.node.start();
-    }
-  }
 
   /* (non-Javadoc)
    * @see fr.charbo.server.Server#isRunning()
    */
   @Override
   public boolean isRunning() {
-    return !this.node.isClosed();
+    return this.isRunning;
   }
 
+
   /* (non-Javadoc)
-   * @see fr.charbo.server.Server#stop()
+   * @see fr.charbo.server.Server#close()
    */
   @Override
-  public void stop() {
-    if ((this.node != null) && this.isRunning()) {
-      this.node.close();
-    }
+  public void close() {
+    this.node.close();
+    this.isRunning = false;
   }
 
   /* (non-Javadoc)

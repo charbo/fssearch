@@ -43,22 +43,19 @@ public class ServerTest {
    */
   @Test
   public void testInit() throws Exception {
-    this.server.start();
-    assertTrue(this.server.isRunning());
+    try {
+      assertNotNull(this.server.getClient());
 
-    assertNotNull(this.server.getClient());
+      final IndexResponse response = this.server.addRiver(this.river);
+      assertTrue(response.isCreated());
 
-    this.server.stop();
-    assertFalse(this.server.isRunning());
-
-    FileSystemUtils.deleteRecursively(new File(this.path));
+      this.server.close();
+      assertFalse(this.server.isRunning());
+    } finally {
+      this.server.close();
+      FileSystemUtils.deleteRecursively(new File(this.path));
+    }
   }
 
-  @Test
-  public void testAddRiver() throws Exception {
-    final IndexResponse response = this.server.addRiver(this.river);
-    System.out.println(response.isCreated());
-
-  }
 
 }
