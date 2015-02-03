@@ -48,6 +48,25 @@
 		<fsriver.version>1.4.0-SNAPSHOT</fsriver.version>
 		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
 		<commons.lang.version>3.3.2</commons.lang.version>
+
+		<!-- ==== Build Properties ==== -->
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
+		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
+		<javac.encoding>UTF-8</javac.encoding>
+		<javac.source.version>1.8</javac.source.version>
+		<javac.target.version>1.8</javac.target.version>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
+		<prerequisites.maven.version>3.2.1</prerequisites.maven.version>
+
+
+		<!-- ==== Plugin's versions ==== -->
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<maven-war-plugin.version>2.4</maven-war-plugin.version>
+		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
+		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+		<versions-maven-plugin.version>2.1</versions-maven-plugin.version>
+		<maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -150,18 +169,100 @@
 	</developers>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+		<pluginManagement>
+			<plugins>
 
+				<!-- ==== Compiler ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<encoding>${javac.encoding}</encoding>
+						<source>${javac.source.version}</source>
+						<target>${javac.target.version}</target>
+						<showWarnings>true</showWarnings>
+						<showDeprecation>true</showDeprecation>
+						<optimize>true</optimize>
+						<!-- <debug>true</debug> -->
+					</configuration>
+				</plugin>
+
+
+
+				<!-- ==== Resources ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
+				</plugin>
+
+				<!-- ==== JAR packager ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven-jar-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<manifestEntries>
+								<Project-name>${project.name}</Project-name>
+								<Project-version>${project.version}</Project-version>
+								<build-date>${maven.build.timestamp}</build-date>
+								<revision>${buildNumber}</revision>
+								<branche>${scmBranch}</branche>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<!-- ==== WAR packager ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${maven-war-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<manifestEntries>
+								<Project-name>${project.name}</Project-name>
+								<Project-version>${project.version}</Project-version>
+								<build-date>${maven.build.timestamp}</build-date>
+								<revision>${buildNumber}</revision>
+								<branche>${scmBranch}</branche>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<!-- ==== Versions ==== -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${versions-maven-plugin.version}</version>
+				</plugin>
+
+				<!-- ==== Dependency ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven-dependency-plugin.version}</version>
+					<configuration>
+						<ignoreNonCompile>true</ignoreNonCompile>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+	</build>
 	<!-- <scm> -->
 	<!-- <connection>scm:git:git@github.com:dadoonet/fsriver.git</connection> -->
 	<!-- <url>scm:git:git@github.com:dadoonet/fsriver.git</url> -->
