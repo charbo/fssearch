@@ -38,6 +38,7 @@
 
 	<modules>
 		<module>fssearch-api</module>
+		<module>fssearch-integration</module>
 	</modules>
 
 	<properties>
@@ -48,6 +49,7 @@
 		<fsriver.version>1.4.0-SNAPSHOT</fsriver.version>
 		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
 		<commons.lang.version>3.3.2</commons.lang.version>
+		<fitnesse.version>20150114</fitnesse.version>
 
 		<!-- ==== Build Properties ==== -->
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -71,6 +73,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- === Modules === -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>fssearch-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			<!-- ==== Elasticsearch === -->
 			<dependency>
 				<groupId>org.elasticsearch</groupId>
@@ -155,6 +163,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
 				<version>${spring.boot.version}</version>
+			</dependency>
+
+			<!-- === Fitnesse === -->
+			<dependency>
+				<groupId>org.fitnesse</groupId>
+				<artifactId>fitnesse</artifactId>
+				<version>${fitnesse.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
