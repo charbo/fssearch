@@ -59,6 +59,7 @@ public class ElasticClient implements Client {
         this.node.client().prepareSearch(rivers).setTypes(DOC).setSearchType(SearchType.DEFAULT).setQuery(queryBuilder)
         .addField("filename")
         .addField("url")
+        .addField("author")
         .setFrom(begin).setSize(pageSize);
     final SearchResponse response = searchRequestBuilder.execute().actionGet();
     return new SearchResult(response.getHits().getTotalHits() ,DocumentBuilder.extractDocuments(response));

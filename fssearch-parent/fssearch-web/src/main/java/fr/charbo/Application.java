@@ -1,11 +1,29 @@
 package fr.charbo;
 
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 /**
  * The Class Application.
@@ -15,15 +33,8 @@ import org.springframework.context.annotation.PropertySources;
   @PropertySource(value = "classpath:default_parameters.properties", ignoreResourceNotFound = true),
   @PropertySource(value = "classpath:custom_parameters.properties", ignoreResourceNotFound = true)
 })
-public class Application extends SpringBootServletInitializer {
+public class Application {
 
-  /* (non-Javadoc)
-   * @see org.springframework.boot.context.web.SpringBootServletInitializer#configure(org.springframework.boot.builder.SpringApplicationBuilder)
-   */
-  @Override
-  protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
-    return application.sources(Application.class);
-  }
 
   /**
    * The main method.
@@ -32,6 +43,51 @@ public class Application extends SpringBootServletInitializer {
    */
   public static void main(final String[] args) {
     SpringApplication.run(Application.class, args);
+  }
+
+  @Configuration
+  @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+  protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(final HttpSecurity http) throws Exception {
+
+      http
+      .formLogin().and()
+      .authorizeRequests()
+      .antMatchers("/index.html", "/home/home.html", "/login.html", "/vendor/**", "/**.js",  "/**/**.js","/**.css", "/search/search_panel.html", "/").permitAll()
+      .anyRequest().authenticated().and().csrf()
+      .csrfTokenRepository(this.csrfTokenRepository()).and()
+      .addFilterAfter(this.csrfHeaderFilter(), CsrfFilter.class);
+    }
+
+    private Filter csrfHeaderFilter() {
+      return new OncePerRequestFilter() {
+        @Override
+        protected void doFilterInternal(final HttpServletRequest request,
+            final HttpServletResponse response, final FilterChain filterChain)
+                throws ServletException, IOException {
+          final CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class
+              .getName());
+          if (csrf != null) {
+            Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
+            final String token = csrf.getToken();
+            if ((cookie == null) || ((token != null)
+                && !token.equals(cookie.getValue()))) {
+              cookie = new Cookie("XSRF-TOKEN", token);
+              cookie.setPath("/");
+              response.addCookie(cookie);
+            }
+          }
+          filterChain.doFilter(request, response);
+        }
+      };
+    }
+
+    private CsrfTokenRepository csrfTokenRepository() {
+      final HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+      repository.setHeaderName("X-XSRF-TOKEN");
+      return repository;
+    }
   }
 
 }

@@ -1,6 +1,4 @@
 function searchController($scope, $http) {
-	$scope.temp = 'Coucou';
-
 	$scope.search = function() {
 		var query = $scope.searchTerm;
 		

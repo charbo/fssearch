@@ -9,6 +9,9 @@ app.config([ '$routeProvider', function($routeProvider) {
 	}).when('/search', {
 		templateUrl : 'search/search_panel.html',
 		controller : 'SearchController'
+	}).when('/login', {
+		templateUrl : 'login.html',
+		controller : 'navigation'
 	}).otherwise({
 		redirectTo : '/'
 	});

@@ -10,6 +10,7 @@ public class Document {
   private String title;
 
   /** The author. */
+  @Mapping(key = "meta.author")
   private String author;
 
   /** The content. */
@@ -19,6 +20,7 @@ public class Document {
   private String type;
 
   /** The path. */
+  @Mapping(key = "file.url")
   private String path;
 
   /**
