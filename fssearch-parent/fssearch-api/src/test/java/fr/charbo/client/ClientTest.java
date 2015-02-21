@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,6 +20,8 @@ import fr.charbo.query.ContentField;
 import fr.charbo.query.result.Document;
 import fr.charbo.server.River;
 import fr.charbo.server.Server;
+import fr.charbo.server.impl.ElasticServer;
+import fr.charbo.server.impl.FsRiver;
 
 /**
  * The Class ClientTest.
@@ -35,16 +37,24 @@ public class ClientTest {
   private static final long ZERO = 0;
 
   /** The server. */
-  @Autowired
   private Server server;
 
   /** The river. */
-  @Autowired
   private River river;
 
   /** The path. */
   @Value("${fssearch.elastisearch.server.path}")
   private String path;
+
+  @Value("${fssearch.default.river.path}")
+  private String riverPath;
+
+
+  @Before
+  public void init() {
+    this.server = new ElasticServer(this.path);
+    this.river = new FsRiver("test_river", this.riverPath, 15);
+  }
 
   /**
    * Test count result.

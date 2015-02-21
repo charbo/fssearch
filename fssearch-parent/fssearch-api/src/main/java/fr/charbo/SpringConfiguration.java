@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySources;
 
 @Configuration
 @PropertySources({
-  @PropertySource("classpath:default_parameters.properties"),
+  @PropertySource(value = "classpath:default_parameters.properties", ignoreResourceNotFound = true),
   @PropertySource(value = "classpath:custom_parameters.properties", ignoreResourceNotFound = true)
 })
 @ComponentScan

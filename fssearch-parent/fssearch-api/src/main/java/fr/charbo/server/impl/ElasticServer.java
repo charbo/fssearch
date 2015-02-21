@@ -1,8 +1,6 @@
 package fr.charbo.server.impl;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.ElasticsearchException;
@@ -11,9 +9,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import fr.charbo.client.Client;
 import fr.charbo.client.ElasticClient;
@@ -23,7 +18,6 @@ import fr.charbo.server.Server;
 /**
  * The Class ElasticServer.
  */
-@Component
 public class ElasticServer implements Server {
 
   /** The node. */
@@ -35,15 +29,12 @@ public class ElasticServer implements Server {
   /** The is running. */
   private boolean isRunning;
 
-  private final Set<River> rivers = new HashSet<River>();
-
   /**
    * Instantiates a new elastic server.
    *
    * @param path the path
    */
-  @Autowired
-  public ElasticServer(@Value("${fssearch.elastisearch.server.path}") final String path) {
+  public ElasticServer(final String path) {
     this.node = NodeBuilder.nodeBuilder().settings(ImmutableSettings.builder().put("path.data", path).build()).node();
     this.isRunning = true;
     this.client = new ElasticClient(this.node);
@@ -54,8 +45,6 @@ public class ElasticServer implements Server {
    */
   @Override
   public IndexResponse addRiver(final River river) throws ElasticsearchException, IOException {
-    //TODO manage case when add return false
-    this.rivers.add(river);
     return this.node.client().prepareIndex("_river", river.getName(), "_meta").setSource(river.getXContentBuilder()).execute().actionGet();
 
   }

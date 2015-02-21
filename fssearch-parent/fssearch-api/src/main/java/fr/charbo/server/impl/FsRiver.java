@@ -9,16 +9,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import fr.charbo.server.River;
 
 /**
  * The Class FsRiver.
  */
-@Component
 public class FsRiver implements River {
 
   /** The name. */
@@ -40,9 +36,7 @@ public class FsRiver implements River {
    * @param rootPath the root path
    * @param updateRate the update rate
    */
-  @Autowired
-  public FsRiver(@Value("${fssearch.default.river.name}") final String name, @Value("${fssearch.default.river.path}") final String rootPath,
-      @Value("${fssearch.default.river.update.rate}") final Integer updateRate) {
+  public FsRiver(final String name, final String rootPath, final Integer updateRate) {
     this.name = name;
     this.rootPath = rootPath;
     this.updateRate = updateRate;

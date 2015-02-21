@@ -6,6 +6,6 @@ controllers.controller("HomeController", [ '$scope', function($scope) {
 	homeController($scope);
 } ]);
 
-controllers.controller("SearchController", [ '$scope', function($scope) {
-	searchController($scope);
+controllers.controller("SearchController", [ '$scope', '$http', function($scope, $http) {
+	searchController($scope, $http);
 } ]);

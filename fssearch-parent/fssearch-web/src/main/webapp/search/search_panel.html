@@ -2,9 +2,14 @@
 
 <!-- The search box puts the term into $scope.searchTerm
        and calls $scope.search() on submit -->
-  <section class="searchField">
-    <form ng-submit="search()">
-      <input type="text" ng-model="searchTerm">
-      <input type="submit" value="Search for recipes">
-    </form>
-  </section>
+<section class="searchField">
+	<form ng-submit="search()">
+		<input type="text" ng-model="searchTerm"> <input type="submit"
+			value="Search for recipes">
+	</form>
+</section>
+
+
+<div ng-repeat="document in documents">
+		<a href='{{document.path}}'>{{document.title}}</a>
+</div>
