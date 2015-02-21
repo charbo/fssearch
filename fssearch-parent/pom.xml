@@ -38,6 +38,7 @@
 
 	<modules>
 		<module>fssearch-api</module>
+		<module>fssearch-web</module>
 	</modules>
 
 	<properties>

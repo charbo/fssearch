@@ -1,0 +1,11 @@
+{
+  "name": "fssearch-web-angularjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start src/test/javascript/karma.config.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

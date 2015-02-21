@@ -1,0 +1,10 @@
+<p>{{temp}}</p>
+
+<!-- The search box puts the term into $scope.searchTerm
+       and calls $scope.search() on submit -->
+  <section class="searchField">
+    <form ng-submit="search()">
+      <input type="text" ng-model="searchTerm">
+      <input type="submit" value="Search for recipes">
+    </form>
+  </section>
