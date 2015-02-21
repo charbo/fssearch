@@ -37,6 +37,7 @@
 	</licenses>
 
 	<modules>
+		<module>fssearch-dao</module>
 		<module>fssearch-api</module>
 		<module>fssearch-web</module>
 	</modules>
@@ -49,6 +50,7 @@
 		<fsriver.version>1.4.0-SNAPSHOT</fsriver.version>
 		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
 		<commons.lang.version>3.3.2</commons.lang.version>
+		<hsql.version>2.3.2</hsql.version>
 
 		<!-- ==== Build Properties ==== -->
 		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
@@ -159,8 +161,20 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-jpa</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-test</artifactId>
 				<version>${spring.boot.version}</version>
+			</dependency>
+
+			<!-- === HSQL === -->
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${hsql.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,0 +1,1 @@
+INSERT INTO TOTO (ID, NAME) VALUES (1, 'administrateur');
