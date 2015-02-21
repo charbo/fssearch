@@ -15,8 +15,8 @@
 
 	<div class="container">
 		<ul class="nav nav-pills" role="tablist">
-			<li ng-class="{active:tab('home')}"><a href="#/home">home</a></li>
-			<li><a href="#/login">login</a></li>
+			<li ng-class="{active:tab('search')}"><a href="#/search">Recherche</a></li>
+			<li><a href="#/admin">Administration</a></li>
 			<li ng-show="authenticated"><a href="" ng-click="logout()">logout</a></li>
 		</ul>
 	</div>
@@ -27,7 +27,7 @@
 	<script src="vendor/angular/angular.min.js"></script>
 	<script src="vendor/angular-route/angular-route.min.js"></script>
 	<script src="search/search.js"></script>
-	<script src="home/home.js"></script>
+	<script src="admin/admin.js"></script>
 	<script src="login.js"></script>
 	<script src="js/controller.js"></script>
 	<script src="js/apps.js"></script>

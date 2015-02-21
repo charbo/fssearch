@@ -24,10 +24,9 @@ function navigationController($rootScope, $scope, $http, $location) {
 		          "content-type" : "application/x-www-form-urlencoded"
 		        }
 		      }).success(function(data) {
-		    	  alert('success');
 		        authenticate(function() {
 		          if ($rootScope.authenticated) {
-		            $location.path("/");
+		            $location.path("/admin");
 		            $scope.error = false;
 		          } else {
 		            $location.path("/login");

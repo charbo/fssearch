@@ -2,8 +2,8 @@
 
 var controllers = angular.module("controllers", []);
 
-controllers.controller("HomeController", [ '$scope', function($scope) {
-	homeController($scope);
+controllers.controller("AdminController", [ '$scope', '$location', function($scope, $location) {
+	adminController($scope, $location);
 } ]);
 
 controllers.controller("SearchController", [ '$scope', '$http', function($scope, $http) {

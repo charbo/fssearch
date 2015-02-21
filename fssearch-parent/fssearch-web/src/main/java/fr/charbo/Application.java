@@ -54,8 +54,9 @@ public class Application {
       http
       .formLogin().and()
       .authorizeRequests()
-      .antMatchers("/index.html", "/home/home.html", "/login.html", "/vendor/**", "/**.js",  "/**/**.js","/**.css", "/search/search_panel.html", "/").permitAll()
-      .anyRequest().authenticated().and().csrf()
+      .antMatchers("/index.html", "/admin/admin.html", "/login.html", "/vendor/**", "/**.js",  "/**/**.js","/**.css", "/search/**", "/").permitAll()
+      .anyRequest().authenticated()
+      .and().csrf()
       .csrfTokenRepository(this.csrfTokenRepository()).and()
       .addFilterAfter(this.csrfHeaderFilter(), CsrfFilter.class);
     }

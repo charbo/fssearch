@@ -1,4 +1,4 @@
-package fr.charbo.utils;
+package fr.charbo.server.impl;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -11,9 +11,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 
 import fr.charbo.query.result.SearchResult;
 import fr.charbo.server.River;
+import fr.charbo.server.SearchEngine;
 import fr.charbo.server.Server;
-import fr.charbo.server.impl.ElasticServer;
-import fr.charbo.server.impl.FsRiver;
 
 /**
  * The Class SearchEngineImpl.
@@ -27,7 +26,7 @@ public class SearchEngineImpl implements SearchEngine {
   private final Server server;
 
   /** The default river. */
-  private final River defaultRiver;
+  private River defaultRiver;
 
   /**
    * Instantiates a new search engine impl.
@@ -39,10 +38,24 @@ public class SearchEngineImpl implements SearchEngine {
    * @throws IOException
    * @throws ElasticsearchException
    */
-  protected SearchEngineImpl(final String indexPath, final String riverName, final String rootPath , final Integer updateRate) throws ElasticsearchException, IOException {
+  protected SearchEngineImpl(final String indexPath) {
     this.server = new ElasticServer(indexPath);
+
+  }
+
+
+  /**
+   * Initialize default river.
+   *
+   * @param riverName the river name
+   * @param rootPath the root path
+   * @param updateRate the update rate
+   * @throws ElasticsearchException the elasticsearch exception
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
+  protected IndexResponse initializeDefaultRiver(final String riverName, final String rootPath, final Integer updateRate) throws ElasticsearchException, IOException {
     this.defaultRiver = new FsRiver(riverName, rootPath, updateRate);
-    this.addRiver(this.defaultRiver);
+    return this.addRiver(this.defaultRiver);
   }
 
 
@@ -91,5 +104,6 @@ public class SearchEngineImpl implements SearchEngine {
     }
     return river;
   }
+
 
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import fr.charbo.query.ContentField;
 import fr.charbo.query.result.Document;
-import fr.charbo.utils.SearchEngine;
-import fr.charbo.utils.SearchEngineInitializer;
+import fr.charbo.server.SearchEngine;
+import fr.charbo.server.impl.SearchEngineBuilder;
 
 
 /**
@@ -40,8 +40,9 @@ public class SearchServiceImpl implements SearchService {
   public SearchServiceImpl(@Value("${fssearch.elastisearch.server.path}") final String indexPath, final @Value("${fssearch.default.river.name}") String riverName,
       @Value("${fssearch.default.river.path}") final String riverPath , @Value("${fssearch.default.river.update.rate}") final Integer updateRate) throws ElasticsearchException, IOException {
     this.riverName = riverName;
-    SearchEngineInitializer.init(indexPath, riverName, riverPath, updateRate*1000*60);
-    this.searchEngine = SearchEngineInitializer.getSearchEngine();
+    final SearchEngineBuilder builder = new SearchEngineBuilder(indexPath);
+    builder.setName(riverName).setRootPath(riverPath).setUpdateRate(updateRate*1000*60);
+    this.searchEngine = builder.build();
 
   }
 

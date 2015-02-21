@@ -1,4 +1,4 @@
-package fr.charbo.utils;
+package fr.charbo.server;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -8,7 +8,6 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import fr.charbo.query.result.SearchResult;
-import fr.charbo.server.River;
 
 /**
  * The Interface SearchEngine.
