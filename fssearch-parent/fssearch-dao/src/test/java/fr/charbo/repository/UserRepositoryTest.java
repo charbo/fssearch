@@ -21,7 +21,7 @@ public class UserRepositoryTest {
 
   @Test
   public void testInit() throws Exception {
-    final User user = new User();;
+    final User user = new User();
     System.out.println(this.userRepository.save(user));
 
   }

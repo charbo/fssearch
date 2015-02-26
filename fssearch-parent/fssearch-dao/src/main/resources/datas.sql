@@ -1,1 +1,1 @@
-INSERT INTO TOTO (ID, NAME) VALUES (1, 'administrateur');
+INSERT INTO USERS (ID, NAME) VALUES (1, 'administrateur');
