@@ -14,30 +14,12 @@ public class User {
 
   /** The id. */
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
 
   /** The name. */
-  @Column(name = "NAME")
-  private String name;
-
-  /**
-   * Gets the name.
-   *
-   * @return the name
-   */
-  public String getName() {
-    return this.name;
-  }
-
-  /**
-   * Sets the name.
-   *
-   * @param name the new name
-   */
-  public void setName(final String name) {
-    this.name = name;
-  }
+  @Column(name = "EMAIL")
+  private String email;
 
   /**
    * Gets the id.
@@ -58,7 +40,23 @@ public class User {
   }
 
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
+    User user = (User) o;
 
+    if (email != null ? !email.equals(user.email) : user.email != null)
+      return false;
 
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return email != null ? email.hashCode() : 0;
+  }
 }
