@@ -13,7 +13,7 @@ public interface River {
 
   /**
    * Gets the root path.
-   * Used to set "url" in FsRiver définition.
+   * Used to set "url" in FsRiver definition.
    * @return the root path
    */
   String getRootPath();

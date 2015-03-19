@@ -1,12 +1,10 @@
 package fr.charbo.server.impl;
 
-import java.io.IOException;
-
+import fr.charbo.server.SearchEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.ElasticsearchException;
-import org.junit.runners.model.InitializationError;
 
-import fr.charbo.server.SearchEngine;
+import java.io.IOException;
 
 /**
  * The Class SearchEngineBuilder.
@@ -71,9 +69,6 @@ public class SearchEngineBuilder {
    * Builds the.
    *
    * @return the search engine
-   * @throws InitializationError
-   * @throws IOException
-   * @throws ElasticsearchException
    */
   public SearchEngine build() throws ElasticsearchException, IOException {
     if (StringUtils.isBlank(this.rootPath) || StringUtils.isBlank(this.name)) {
