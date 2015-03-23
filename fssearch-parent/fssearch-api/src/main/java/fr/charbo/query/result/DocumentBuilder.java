@@ -34,7 +34,10 @@ public class DocumentBuilder {
       if (anno != null) {
         final SearchHitField value = values.get(anno.key());
         final DirectFieldAccessor myObjectAccessor = new DirectFieldAccessor(result);
-        myObjectAccessor.setPropertyValue(field.getName(), value.getValue());
+        //TODO check why null
+        if (field != null && value != null) {
+        	myObjectAccessor.setPropertyValue(field.getName(), value.getValue());
+        }
       }
     }
 
