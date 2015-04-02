@@ -26,10 +26,10 @@ public class DocumentBuilderTest {
   public void testcreateDocument() throws Exception {
     final List<Object> title = new ArrayList<Object>();
     title.add("Toto");
-    final SearchHitField sf = new InternalSearchHitField("title", title );
+    final SearchHitField sf = new InternalSearchHitField("file.filename", title );
 
     final Map<String, SearchHitField> values = new HashMap<String, SearchHitField>();
-    values.put("title", sf);
+    values.put("file.filename", sf);
 
     final Document document = DocumentBuilder.createDocument(values);
     assertEquals("Toto", document.getTitle());

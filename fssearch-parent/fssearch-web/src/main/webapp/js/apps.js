@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('app', [ 'ngRoute', 'controllers' ]);
+var app = angular.module('app', [ 'ngRoute', 'controllers', 'zeroclipboard' ]);
 
 app.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/admin', {
@@ -17,3 +17,12 @@ app.config([ '$routeProvider', function($routeProvider) {
 	});
 	
 } ]);
+
+app.config(['uiZeroclipConfigProvider', function(uiZeroclipConfigProvider) {
+
+    // config ZeroClipboard
+    uiZeroclipConfigProvider.setZcConf({
+      swfPath: '../vendor/zeroclipboard/dist/ZeroClipboard.swf'
+    });
+
+  }]);

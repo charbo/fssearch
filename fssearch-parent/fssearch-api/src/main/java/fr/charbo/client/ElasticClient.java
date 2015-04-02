@@ -56,7 +56,7 @@ public class ElasticClient implements Client {
   @Override
   public SearchResult search(final QueryBuilder queryBuilder, final int begin, final int pageSize, final String... rivers) {
     final SearchRequestBuilder searchRequestBuilder =
-        this.node.client().prepareSearch(rivers).setTypes(DOC).setSearchType(SearchType.DEFAULT).setQuery(queryBuilder)
+        this.node.client().prepareSearch(rivers).setTypes(DOC).setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(queryBuilder)
         .addField("filename")
         .addField("url")
         .addField("author")

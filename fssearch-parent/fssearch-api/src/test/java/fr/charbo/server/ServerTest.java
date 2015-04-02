@@ -9,6 +9,7 @@ import java.io.File;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +58,7 @@ public class ServerTest {
    * @throws Exception the exception
    */
   @Test
+  @Ignore
   public void testInit() throws Exception {
     try {
       assertNotNull(this.server.getClient());

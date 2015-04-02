@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.action.count.CountResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -28,11 +29,11 @@ public class Sample {
 
       System.out.println("Startin river");
       System.out.println(river.string());
-      node.client().prepareIndex("_river", "name", "_meta").setSource(river).execute().actionGet();
+      IndexResponse  resp = node.client().prepareIndex("_river", "name", "_meta").setSource(river).execute().actionGet();
 
       Thread.sleep(300);
 
-      final CountResponse res = node.client().prepareCount("name").setTypes("doc").setQuery(QueryBuilders.termQuery("content", "zob")).execute().actionGet();
+      final CountResponse res = node.client().prepareCount("name").setTypes("doc").setQuery(QueryBuilders.termQuery("content", "environs")).execute().actionGet();
 
       System.out.println("-----------------");
       System.out.println(res.getCount());

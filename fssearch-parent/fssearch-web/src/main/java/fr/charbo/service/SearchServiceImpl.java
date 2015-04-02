@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,8 @@ public class SearchServiceImpl implements SearchService {
   public List<Document> search(final String query) {
     //TODO
     final ContentField content = new ContentField(query);
-    return this.searchEngine.search(content.getFuzzyBuilder(),this.riverName).getDocuments();
+    
+    return this.searchEngine.search(QueryBuilders.fuzzyLikeThisQuery().likeText(query),this.riverName).getDocuments();
   }
 
 

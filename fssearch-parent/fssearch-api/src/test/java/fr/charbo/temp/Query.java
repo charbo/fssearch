@@ -18,12 +18,12 @@ public class Query {
       node = NodeBuilder.nodeBuilder().node();
       final Client client = node.client();
 
-      QueryBuilders.boolQuery().must(QueryBuilders.fuzzyQuery("content", "zob"));
+      QueryBuilders.boolQuery().must(QueryBuilders.fuzzyQuery("content", "corps"));
 
 
 
-      Requests.countRequest(QueryBuilders.termQuery("content", "zob").toString());
-      final CountResponse res = client.prepareCount("name").setTypes("doc").setQuery(QueryBuilders.termQuery("content", "zob")).execute().actionGet();
+      Requests.countRequest(QueryBuilders.termQuery("content", "corps").toString());
+      final CountResponse res = client.prepareCount("name").setTypes("doc").setQuery(QueryBuilders.termQuery("content", "corps")).execute().actionGet();
 
       System.out.println("-----------------");
       System.out.println(res.getCount());
@@ -32,7 +32,7 @@ public class Query {
       final SearchResponse response = client.prepareSearch("name")
           .setTypes("doc")
           .setSearchType(SearchType.DEFAULT)
-          .setQuery(QueryBuilders.termQuery("content", "zob"))
+          .setQuery(QueryBuilders.termQuery("content", "corps"))
           //		        .setQuery(QueryBuilders.termQuery("author", "charbonnier"))             // Query
           //		        .setPostFilter(FilterBuilders.rangeFilter("age").from(12).to(18))   // Filter
           .addField("content")
