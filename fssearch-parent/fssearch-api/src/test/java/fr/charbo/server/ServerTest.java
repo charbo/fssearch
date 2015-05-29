@@ -48,7 +48,7 @@ public class ServerTest {
   @Before
   public void init() {
     this.server = new ElasticServer(this.path);
-    this.river = new FsRiver("test_river", this.riverPath, 15);
+    this.river = new FsRiver("test_river", this.riverPath);
   }
 
 

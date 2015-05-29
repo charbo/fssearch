@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import fr.charbo.query.ContentField;
 import fr.charbo.query.result.Document;
 import fr.charbo.server.SearchEngine;
 import fr.charbo.server.impl.SearchEngineBuilder;
@@ -39,10 +38,14 @@ public class SearchServiceImpl implements SearchService {
    */
   @Autowired
   public SearchServiceImpl(@Value("${fssearch.elastisearch.server.path}") final String indexPath, final @Value("${fssearch.default.river.name}") String riverName,
-      @Value("${fssearch.default.river.path}") final String riverPath , @Value("${fssearch.default.river.update.rate}") final Integer updateRate) throws ElasticsearchException, IOException {
+      @Value("${fssearch.default.river.path}") final String riverPath , @Value("${fssearch.default.river.update.rate}") final Integer updateRate
+      , @Value("${fssearch.default.river.extensions}") final String extensions
+      , @Value("${fssearch.default.river.excluded.path}") final String excludedPaths) throws ElasticsearchException, IOException {
     this.riverName = riverName;
-    final SearchEngineBuilder builder = new SearchEngineBuilder(indexPath);
-    builder.setName(riverName).setRootPath(riverPath).setUpdateRate(updateRate*1000*60);
+    final SearchEngineBuilder builder = new SearchEngineBuilder(indexPath, riverName, riverPath);
+    builder.updateRate(updateRate*1000*60);
+    builder.storedType(extensions);
+    builder.excludedPaths(excludedPaths);
     this.searchEngine = builder.build();
 
   }
@@ -55,15 +58,8 @@ public class SearchServiceImpl implements SearchService {
    */
   @Override
   public List<Document> search(final String query) {
-    //TODO
-    final ContentField content = new ContentField(query);
-    
     return this.searchEngine.search(QueryBuilders.fuzzyLikeThisQuery().likeText(query),this.riverName).getDocuments();
   }
-
-
-
-
 
 
 }

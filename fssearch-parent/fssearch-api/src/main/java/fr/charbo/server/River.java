@@ -24,6 +24,8 @@ public interface River {
    * @return the update rate
    */
   Integer getUpdateRate();
+  
+  void setUpdateRate(Integer updateRate);
 
   /**
    * Gets the name.
@@ -54,6 +56,29 @@ public interface River {
    * @return the current Stored Types
    */
   Set<String> removeDocType(String docType);
+  
+  /**
+   * Gets the Excludedpath.
+   *
+   * @return the current Excluded Paths
+   */
+  Set<String> getExcludedPaths();
+
+  /**
+   * Adds doc path in Excludedpath.
+   *
+   * @param ExcludedPath the doc path
+   * @return the current Excluded Paths
+   */
+  Set<String> addExcludedPath(String excludedPath);
+
+  /**
+   * Removes the doc path.
+   *
+   * @param ExcludedPath the doc path
+   * @return the current Excluded Paths
+   */
+  Set<String> removeExcludedPath(String excludedPath);
 
   /**
    * Gets the x content builder.

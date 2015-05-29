@@ -11,398 +11,410 @@
 	governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.2.1.RELEASE</version>
-    </parent>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.2.1.RELEASE</version>
+	</parent>
 
-    <groupId>fr.charbo</groupId>
-    <artifactId>fssearch</artifactId>
-    <version>0.1-SNAPSHOT</version>
-    <name>Elasticsearch File System Search Site</name>
-    <!-- <url>https://github.com/dadoonet/fsriver/</url> -->
-    <!-- <description>FS River Plugin offers a simple way to index local files
-        into elasticsearch.</description> -->
+	<groupId>fr.charbo</groupId>
+	<artifactId>fssearch</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Elasticsearch File System Search Site</name>
+	<!-- <url>https://github.com/dadoonet/fsriver/</url> -->
+	<!-- <description>FS River Plugin offers a simple way to index local files 
+		into elasticsearch.</description> -->
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-    <modules>
-        <module>fssearch-dao</module>
-        <module>fssearch-api</module>
-        <module>fssearch-web</module>
-    </modules>
+	<modules>
+		<module>fssearch-dao</module>
+		<module>fssearch-api</module>
+		<module>fssearch-web</module>
+		<module>fssearch-integration</module>
+	</modules>
 
-    <properties>
-        <elasticsearch.version>1.4.0</elasticsearch.version>
-        <tika.version>1.5</tika.version>
-        <poi.version>3.10.1</poi.version>
-        <lucene.version>4.10.2</lucene.version>
-        <fsriver.version>1.4.0-SNAPSHOT</fsriver.version>
-        <spring.boot.version>1.2.1.RELEASE</spring.boot.version>
-        <commons.lang.version>3.3.2</commons.lang.version>
-        <hsql.version>2.3.2</hsql.version>
+	<properties>
+		<elasticsearch.version>1.4.0</elasticsearch.version>
+		<tika.version>1.5</tika.version>
+		<poi.version>3.10.1</poi.version>
+		<lucene.version>4.10.2</lucene.version>
+		<fsriver.version>1.4.0-SNAPSHOT</fsriver.version>
+		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
+		<spring.integration.version>4.1.2.RELEASE</spring.integration.version>
+		<commons.lang.version>3.3.2</commons.lang.version>
+		<hsql.version>2.3.2</hsql.version>
 
-        <!-- ==== Build Properties ==== -->
-        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-        <project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
-        <project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
-        <javac.encoding>UTF-8</javac.encoding>
-        <javac.source.version>1.8</javac.source.version>
-        <javac.target.version>1.8</javac.target.version>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
-        <prerequisites.maven.version>3.2.1</prerequisites.maven.version>
+		<!-- ==== Build Properties ==== -->
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+		<project.build.resourceEncoding>ISO-8859-1</project.build.resourceEncoding>
+		<project.reporting.outputEncoding>ISO-8859-1</project.reporting.outputEncoding>
+		<javac.encoding>UTF-8</javac.encoding>
+		<javac.source.version>1.8</javac.source.version>
+		<javac.target.version>1.8</javac.target.version>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
+		<prerequisites.maven.version>3.2.1</prerequisites.maven.version>
 
 
-        <!-- ==== Plugin's versions ==== -->
-        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
-        <maven-war-plugin.version>2.4</maven-war-plugin.version>
-        <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
-        <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-        <versions-maven-plugin.version>2.1</versions-maven-plugin.version>
-        <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
-    </properties>
+		<!-- ==== Plugin's versions ==== -->
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<maven-war-plugin.version>2.4</maven-war-plugin.version>
+		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
+		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
+		<versions-maven-plugin.version>2.1</versions-maven-plugin.version>
+		<maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+	</properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- ==== Elasticsearch === -->
-            <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch</artifactId>
-                <version>${elasticsearch.version}</version>
-            </dependency>
-            <dependency>
-			<groupId>fr.charbo</groupId>
-			<artifactId>fssearch-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency>
+	<dependencyManagement>
+		<dependencies>
+			<!-- ==== Elasticsearch === -->
 			<dependency>
-                <groupId>fr.pilato.elasticsearch.river</groupId>
-                <artifactId>fsriver</artifactId>
-                <version>${fsriver.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml</artifactId>
-                <version>${poi.version}</version>
-                <scope>compile</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>stax</groupId>
-                        <artifactId>stax-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>xml-apis</groupId>
-                        <artifactId>xml-apis</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-ooxml-schemas</artifactId>
-                <version>${poi.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.poi</groupId>
-                <artifactId>poi-scratchpad</artifactId>
-                <version>${poi.version}</version>
-                <scope>compile</scope>
-            </dependency>
+				<groupId>org.elasticsearch</groupId>
+				<artifactId>elasticsearch</artifactId>
+				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>fr.charbo</groupId>
+				<artifactId>fssearch-api</artifactId>
+				<version>0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>fr.pilato.elasticsearch.river</groupId>
+				<artifactId>fsriver</artifactId>
+				<version>${fsriver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${poi.version}</version>
+				<scope>compile</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>stax</groupId>
+						<artifactId>stax-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml-schemas</artifactId>
+				<version>${poi.version}</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-scratchpad</artifactId>
+				<version>${poi.version}</version>
+				<scope>compile</scope>
+			</dependency>
 
-            <dependency>
-                <groupId>org.apache.tika</groupId>
-                <artifactId>tika-core</artifactId>
-                <version>${tika.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tika</groupId>
-                <artifactId>tika-parsers</artifactId>
-                <version>${tika.version}</version>
-            </dependency>
-            <!--Dependency for parsing remote ssh directory [http://www.jcraft.com/jsch/] -->
-            <dependency>
-                <groupId>com.jcraft</groupId>
-                <artifactId>jsch</artifactId>
-                <version>0.1.51</version>
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>${tika.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-parsers</artifactId>
+				<version>${tika.version}</version>
+			</dependency>
+			<!--Dependency for parsing remote ssh directory [http://www.jcraft.com/jsch/] -->
+			<dependency>
+				<groupId>com.jcraft</groupId>
+				<artifactId>jsch</artifactId>
+				<version>0.1.51</version>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+			</dependency>
 
-            <!-- === Commons === -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons.lang.version}</version>
-            </dependency>
+			<!-- === Commons === -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons.lang.version}</version>
+			</dependency>
 
-            <!-- === Spring === -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-security</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
+			<!-- === Spring === -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-security</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-jpa</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-core</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-file</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			
+			<!-- === HSQL === -->
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${hsql.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-            <!-- === HSQL === -->
-            <dependency>
-                <groupId>org.hsqldb</groupId>
-                <artifactId>hsqldb</artifactId>
-                <version>${hsql.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+	<developers>
+		<developer>
+			<id>charbo</id>
+			<name>Gaël Charbonnier</name>
+			<email>gael.charbonnier@gmail.com</email>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
 
-    <developers>
-        <developer>
-            <id>charbo</id>
-            <name>Gaël Charbonnier</name>
-            <email>gael.charbonnier@gmail.com</email>
-            <timezone>+1</timezone>
-        </developer>
-    </developers>
+	<build>
+		<pluginManagement>
+			<plugins>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-
-                <!-- ==== Compiler ==== -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
-                    <configuration>
-                        <encoding>${javac.encoding}</encoding>
-                        <source>${javac.source.version}</source>
-                        <target>${javac.target.version}</target>
-                        <showWarnings>true</showWarnings>
-                        <showDeprecation>true</showDeprecation>
-                        <optimize>true</optimize>
-                        <!-- <debug>true</debug> -->
-                    </configuration>
-                </plugin>
-
-
-                <!-- ==== Resources ==== -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven-resources-plugin.version}</version>
-                </plugin>
-
-                <!-- ==== JAR packager ==== -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin.version}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addClasspath>true</addClasspath>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                            <addMavenDescriptor>false</addMavenDescriptor>
-                            <manifestEntries>
-                                <Project-name>${project.name}</Project-name>
-                                <Project-version>${project.version}</Project-version>
-                                <build-date>${maven.build.timestamp}</build-date>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                </plugin>
-
-                <!-- ==== WAR packager ==== -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${maven-war-plugin.version}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addClasspath>true</addClasspath>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                            <addMavenDescriptor>false</addMavenDescriptor>
-                            <manifestEntries>
-                                <Project-name>${project.name}</Project-name>
-                                <Project-version>${project.version}</Project-version>
-                                <build-date>${maven.build.timestamp}</build-date>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                </plugin>
-
-                <!-- ==== Versions ==== -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>versions-maven-plugin</artifactId>
-                    <version>${versions-maven-plugin.version}</version>
-                </plugin>
-
-                <!-- ==== Dependency ==== -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
-                    <configuration>
-                        <ignoreNonCompile>true</ignoreNonCompile>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-    </build>
-    <!-- <scm> -->
-    <!-- <connection>scm:git:git@github.com:dadoonet/fsriver.git</connection> -->
-    <!-- <url>scm:git:git@github.com:dadoonet/fsriver.git</url> -->
-    <!-- <developerConnection>scm:git:git@github.com:dadoonet/fsriver.git</developerConnection> -->
-    <!-- </scm> -->
-
-    <!-- <issueManagement> -->
-    <!-- <system>GitHub</system> -->
-    <!-- <url>https://github.com/dadoonet/fsriver/issues/</url> -->
-    <!-- </issueManagement> -->
-
-    <!-- <build> -->
-    <!-- <plugins> -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-compiler-plugin</artifactId> -->
-    <!-- <version>2.3.2</version> -->
-    <!-- <configuration> -->
-    <!-- <source>1.7</source> -->
-    <!-- <target>1.7</target> -->
-    <!-- </configuration> -->
-    <!-- </plugin> -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-javadoc-plugin</artifactId> -->
-    <!-- <version>2.8</version> -->
-    <!-- </plugin> -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-source-plugin</artifactId> -->
-    <!-- <version>2.1.2</version> -->
-    <!-- </plugin> -->
-    <!-- Add/Edit items in META-INF/MANIFEST.MF -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-jar-plugin</artifactId> -->
-    <!-- <version>2.3.2</version> -->
-    <!-- </plugin> -->
-    <!-- Copy dependencies into lib folder -->
-    <!-- To see full classpath use mvn dependency:build-classpath -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-dependency-plugin</artifactId> -->
-    <!-- <version>2.3</version> -->
-    <!-- <executions> -->
-    <!-- <execution> -->
-    <!-- <id>copy-dependencies</id> -->
-    <!-- <phase>package</phase> -->
-    <!-- <goals> -->
-    <!-- <goal>copy-dependencies</goal> -->
-    <!-- </goals> -->
-    <!-- <configuration> -->
-    <!-- <outputDirectory>${project.build.directory}/lib</outputDirectory> -->
-    <!-- </configuration> -->
-    <!-- </execution> -->
-    <!-- </executions> -->
-    <!-- </plugin> -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-surefire-plugin</artifactId> -->
-    <!-- <version>2.13</version> -->
-    <!-- <configuration> -->
-    <!-- <skip>true</skip> -->
-    <!-- </configuration> -->
-    <!-- </plugin> -->
-
-    <!-- Generate the release zip file (run during package step) -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-assembly-plugin</artifactId> -->
-    <!-- <version>2.3</version> -->
-    <!-- <configuration> -->
-    <!-- <appendAssemblyId>false</appendAssemblyId> -->
-    <!-- <outputDirectory>${project.build.directory}/releases/</outputDirectory> -->
-    <!-- <descriptors> -->
-    <!-- <descriptor>${basedir}/src/main/assemblies/esplugin.xml</descriptor> -->
-    <!-- </descriptors> -->
-    <!-- </configuration> -->
-    <!-- <executions> -->
-    <!-- <execution> -->
-    <!-- <id>generate-release-plugin</id> -->
-    <!-- <phase>package</phase> -->
-    <!-- <goals> -->
-    <!-- <goal>single</goal> -->
-    <!-- </goals> -->
-    <!-- </execution> -->
-    <!-- </executions> -->
-    <!-- </plugin> -->
-    <!-- <plugin> -->
-    <!-- <groupId>org.apache.maven.plugins</groupId> -->
-    <!-- <artifactId>maven-enforcer-plugin</artifactId> -->
-    <!-- <version>1.3.1</version> -->
-    <!-- <executions> -->
-    <!-- <execution> -->
-    <!-- <id>enforce-versions</id> -->
-    <!-- <goals> -->
-    <!-- <goal>enforce</goal> -->
-    <!-- </goals> -->
-    <!-- <configuration> -->
-    <!-- <rules> -->
-    <!-- <requireJavaVersion> -->
-    <!-- <version>[1.7,)</version> -->
-    <!-- </requireJavaVersion> -->
-    <!-- </rules> -->
-    <!-- </configuration> -->
-    <!-- </execution> -->
-    <!-- </executions> -->
-    <!-- </plugin> -->
-    <!-- </plugins> -->
-    <!-- <resources> -->
-    <!-- <resource> -->
-    <!-- <directory>src/main/resources</directory> -->
-    <!-- <filtering>true</filtering> -->
-    <!-- <includes> -->
-    <!-- <include>**/*.properties</include> -->
-    <!-- </includes> -->
-    <!-- </resource> -->
-    <!-- </resources> -->
-    <!-- </build> -->
+				<!-- ==== Compiler ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<encoding>${javac.encoding}</encoding>
+						<source>${javac.source.version}</source>
+						<target>${javac.target.version}</target>
+						<showWarnings>true</showWarnings>
+						<showDeprecation>true</showDeprecation>
+						<optimize>true</optimize>
+						<!-- <debug>true</debug> -->
+					</configuration>
+				</plugin>
 
 
-    <packaging>pom</packaging>
+				<!-- ==== Resources ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>${maven-resources-plugin.version}</version>
+				</plugin>
+
+				<!-- ==== JAR packager ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>${maven-jar-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<manifestEntries>
+								<Project-name>${project.name}</Project-name>
+								<Project-version>${project.version}</Project-version>
+								<build-date>${maven.build.timestamp}</build-date>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<!-- ==== WAR packager ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${maven-war-plugin.version}</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<addClasspath>true</addClasspath>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							</manifest>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<manifestEntries>
+								<Project-name>${project.name}</Project-name>
+								<Project-version>${project.version}</Project-version>
+								<build-date>${maven.build.timestamp}</build-date>
+							</manifestEntries>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<!-- ==== Versions ==== -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>${versions-maven-plugin.version}</version>
+				</plugin>
+
+				<!-- ==== Dependency ==== -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>${maven-dependency-plugin.version}</version>
+					<configuration>
+						<ignoreNonCompile>true</ignoreNonCompile>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+	</build>
+	<!-- <scm> -->
+	<!-- <connection>scm:git:git@github.com:dadoonet/fsriver.git</connection> -->
+	<!-- <url>scm:git:git@github.com:dadoonet/fsriver.git</url> -->
+	<!-- <developerConnection>scm:git:git@github.com:dadoonet/fsriver.git</developerConnection> -->
+	<!-- </scm> -->
+
+	<!-- <issueManagement> -->
+	<!-- <system>GitHub</system> -->
+	<!-- <url>https://github.com/dadoonet/fsriver/issues/</url> -->
+	<!-- </issueManagement> -->
+
+	<!-- <build> -->
+	<!-- <plugins> -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-compiler-plugin</artifactId> -->
+	<!-- <version>2.3.2</version> -->
+	<!-- <configuration> -->
+	<!-- <source>1.7</source> -->
+	<!-- <target>1.7</target> -->
+	<!-- </configuration> -->
+	<!-- </plugin> -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-javadoc-plugin</artifactId> -->
+	<!-- <version>2.8</version> -->
+	<!-- </plugin> -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-source-plugin</artifactId> -->
+	<!-- <version>2.1.2</version> -->
+	<!-- </plugin> -->
+	<!-- Add/Edit items in META-INF/MANIFEST.MF -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-jar-plugin</artifactId> -->
+	<!-- <version>2.3.2</version> -->
+	<!-- </plugin> -->
+	<!-- Copy dependencies into lib folder -->
+	<!-- To see full classpath use mvn dependency:build-classpath -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-dependency-plugin</artifactId> -->
+	<!-- <version>2.3</version> -->
+	<!-- <executions> -->
+	<!-- <execution> -->
+	<!-- <id>copy-dependencies</id> -->
+	<!-- <phase>package</phase> -->
+	<!-- <goals> -->
+	<!-- <goal>copy-dependencies</goal> -->
+	<!-- </goals> -->
+	<!-- <configuration> -->
+	<!-- <outputDirectory>${project.build.directory}/lib</outputDirectory> -->
+	<!-- </configuration> -->
+	<!-- </execution> -->
+	<!-- </executions> -->
+	<!-- </plugin> -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-surefire-plugin</artifactId> -->
+	<!-- <version>2.13</version> -->
+	<!-- <configuration> -->
+	<!-- <skip>true</skip> -->
+	<!-- </configuration> -->
+	<!-- </plugin> -->
+
+	<!-- Generate the release zip file (run during package step) -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-assembly-plugin</artifactId> -->
+	<!-- <version>2.3</version> -->
+	<!-- <configuration> -->
+	<!-- <appendAssemblyId>false</appendAssemblyId> -->
+	<!-- <outputDirectory>${project.build.directory}/releases/</outputDirectory> -->
+	<!-- <descriptors> -->
+	<!-- <descriptor>${basedir}/src/main/assemblies/esplugin.xml</descriptor> -->
+	<!-- </descriptors> -->
+	<!-- </configuration> -->
+	<!-- <executions> -->
+	<!-- <execution> -->
+	<!-- <id>generate-release-plugin</id> -->
+	<!-- <phase>package</phase> -->
+	<!-- <goals> -->
+	<!-- <goal>single</goal> -->
+	<!-- </goals> -->
+	<!-- </execution> -->
+	<!-- </executions> -->
+	<!-- </plugin> -->
+	<!-- <plugin> -->
+	<!-- <groupId>org.apache.maven.plugins</groupId> -->
+	<!-- <artifactId>maven-enforcer-plugin</artifactId> -->
+	<!-- <version>1.3.1</version> -->
+	<!-- <executions> -->
+	<!-- <execution> -->
+	<!-- <id>enforce-versions</id> -->
+	<!-- <goals> -->
+	<!-- <goal>enforce</goal> -->
+	<!-- </goals> -->
+	<!-- <configuration> -->
+	<!-- <rules> -->
+	<!-- <requireJavaVersion> -->
+	<!-- <version>[1.7,)</version> -->
+	<!-- </requireJavaVersion> -->
+	<!-- </rules> -->
+	<!-- </configuration> -->
+	<!-- </execution> -->
+	<!-- </executions> -->
+	<!-- </plugin> -->
+	<!-- </plugins> -->
+	<!-- <resources> -->
+	<!-- <resource> -->
+	<!-- <directory>src/main/resources</directory> -->
+	<!-- <filtering>true</filtering> -->
+	<!-- <includes> -->
+	<!-- <include>**/*.properties</include> -->
+	<!-- </includes> -->
+	<!-- </resource> -->
+	<!-- </resources> -->
+	<!-- </build> -->
+
+
+	<packaging>pom</packaging>
 </project>

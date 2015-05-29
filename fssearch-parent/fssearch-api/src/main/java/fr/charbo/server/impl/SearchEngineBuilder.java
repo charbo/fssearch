@@ -1,81 +1,70 @@
 package fr.charbo.server.impl;
 
-import fr.charbo.server.SearchEngine;
-import org.apache.commons.lang3.StringUtils;
+import java.io.IOException;
+
 import org.elasticsearch.ElasticsearchException;
 
-import java.io.IOException;
+import fr.charbo.server.River;
+import fr.charbo.server.SearchEngine;
 
 /**
  * The Class SearchEngineBuilder.
  */
 public class SearchEngineBuilder {
 
-  /** The search engine. */
-  private static SearchEngineImpl SEARCH_ENGINE;
-
-  /** The name. */
-  private String name;
-
-  /** The root path. */
-  private String rootPath;
-
-  /** The update rate. */
-  private Integer updateRate = 60000;
-
-  /**
-   * Instantiates a new search engine builder.
-   *
-   * @param indexPath the index path
-   */
-  public SearchEngineBuilder(final String indexPath) {
-    if (SEARCH_ENGINE == null) {
-      SEARCH_ENGINE = new SearchEngineImpl(indexPath);
-    }
-  }
+	/** The search engine. */
+	private static SearchEngineImpl SEARCH_ENGINE;
 
 
-  /**
-   * Sets the name.
-   *
-   * @param name the new name
-   */
-  public SearchEngineBuilder setName(final String name) {
-    this.name = name;
-    return this;
-  }
+	private River river;
 
-  /**
-   * Sets the root path.
-   *
-   * @param rootPath the new root path
-   */
-  public SearchEngineBuilder setRootPath(final String rootPath) {
-    this.rootPath = rootPath;
-    return this;
-  }
+	/**
+	 * Instantiates a new search engine builder.
+	 *
+	 * @param indexPath
+	 *            the index path
+	 */
+	public SearchEngineBuilder(final String indexPath, final String name, final String rootPath) {
+		if (SEARCH_ENGINE == null) {
+			SEARCH_ENGINE = new SearchEngineImpl(indexPath);
+			river = SEARCH_ENGINE.initializeDefaultRiver(name,	rootPath);
+		}
+	}
 
-  /**
-   * Sets the update rate.
-   *
-   * @param updateRate the new update rate
-   */
-  public SearchEngineBuilder setUpdateRate(final Integer updateRate) {
-    this.updateRate = updateRate;
-    return this;
-  }
 
-  /**
-   * Builds the.
-   *
-   * @return the search engine
-   */
-  public SearchEngine build() throws ElasticsearchException, IOException {
-    if (StringUtils.isBlank(this.rootPath) || StringUtils.isBlank(this.name)) {
-      throw new InstantiationError("rootPath and name must be initialiszed");
-    }
-    //TODO use response
-    SEARCH_ENGINE.initializeDefaultRiver(this.name, this.rootPath, this.updateRate);
-    return SEARCH_ENGINE;
-  }
+	/**
+	 * Sets the update rate.
+	 *
+	 * @param updateRate
+	 *            the new update rate
+	 */
+	public SearchEngineBuilder updateRate(final Integer updateRate) {
+		river.setUpdateRate(updateRate);
+		return this;
+	}
+	
+	public SearchEngineBuilder storedType(final String storedType) {
+		for (String docType : storedType.split(";")) {
+			river.addDocType(docType);
+		}
+		return this;
+	}
+	
+	
+	public SearchEngineBuilder excludedPaths(final String excludedPaths) {
+		for (String excludedPath : excludedPaths.split(";")) {
+			river.addExcludedPath(excludedPath);
+		}
+		return this;
+	}
+
+	/**
+	 * Builds the.
+	 *
+	 * @return the search engine
+	 */
+	public SearchEngine build() throws ElasticsearchException, IOException {
+		SEARCH_ENGINE.launchRiver();
+		return SEARCH_ENGINE;
+	}
 }

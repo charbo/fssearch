@@ -53,9 +53,13 @@ public class SearchEngineImpl implements SearchEngine {
    * @throws ElasticsearchException the elasticsearch exception
    * @throws IOException Signals that an I/O exception has occurred.
    */
-  protected IndexResponse initializeDefaultRiver(final String riverName, final String rootPath, final Integer updateRate) throws ElasticsearchException, IOException {
-    this.defaultRiver = new FsRiver(riverName, rootPath, updateRate);
-    return this.addRiver(this.defaultRiver);
+  protected River initializeDefaultRiver(final String riverName, final String rootPath)  {
+    this.defaultRiver = new FsRiver(riverName, rootPath);
+    return this.defaultRiver;
+  }
+  
+  protected IndexResponse launchRiver() throws ElasticsearchException, IOException {
+	  return this.addRiver(this.defaultRiver);
   }
 
 

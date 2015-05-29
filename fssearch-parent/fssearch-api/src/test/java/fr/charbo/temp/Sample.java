@@ -4,14 +4,10 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import org.elasticsearch.action.count.CountResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-
-import fr.charbo.server.impl.FsRiver;
 
 public class Sample {
 
@@ -19,21 +15,14 @@ public class Sample {
     Node node = null;
     try {
 
-      node = NodeBuilder.nodeBuilder().settings(ImmutableSettings.builder().put("path.data", "./target/data").build()).node();
+      node = NodeBuilder
+				.nodeBuilder()
+				.settings(
+						ImmutableSettings.builder()
+								.put("path.data", "c:/tmp_es/").build())
+				.node();
 
-      final FsRiver fsRiver = new FsRiver("name", "./src/test/resources/docs", 15);
-
-      final XContentBuilder river = fsRiver.getXContentBuilder();
-      //          jsonBuilder().prettyPrint().startObject().field("type", "fs").startObject("fs").field("url", "C:\\temp_es\\doc").field("update_rate", 10)
-      //          .endObject().startObject("index").field("bulk_size", 1).endObject().endObject();
-
-      System.out.println("Startin river");
-      System.out.println(river.string());
-      IndexResponse  resp = node.client().prepareIndex("_river", "name", "_meta").setSource(river).execute().actionGet();
-
-      Thread.sleep(300);
-
-      final CountResponse res = node.client().prepareCount("name").setTypes("doc").setQuery(QueryBuilders.termQuery("content", "environs")).execute().actionGet();
+      final CountResponse res = node.client().prepareCount("main_fs").setTypes("doc").execute().actionGet();
 
       System.out.println("-----------------");
       System.out.println(res.getCount());
@@ -60,11 +49,9 @@ public class Sample {
       //      node.client().update(updateRequest).get();
 
       // Waiting for kill signal
-      System.out.print("press return when finished:");
-      System.in.read();
-    } catch (final IOException e) {
-      e.printStackTrace();
-    } finally {
+//      System.out.print("press return when finished:");
+//      System.in.read();
+    }  finally {
       if (node != null) {
         node.close();
       }

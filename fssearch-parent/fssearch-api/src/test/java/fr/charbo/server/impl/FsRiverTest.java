@@ -22,7 +22,7 @@ public class FsRiverTest {
   private static final String INCLUDES_PDF = "\"includes\" : [ \"*.pdf\" ]";
 
   /** The fs river. */
-  private final FsRiver fsRiver = new FsRiver("name", "rootPath", 100);
+  private final FsRiver fsRiver = new FsRiver("name", "rootPath");
 
   /**
    * Test get x content builder.
