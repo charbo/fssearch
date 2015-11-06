@@ -1,32 +1,10 @@
 package fr.charbo.configuration;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchEvent.Kind;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.jar.Attributes;
-
-import org.neo4j.cypher.internal.compiler.v2_1.ast.rewriters.isolateAggregation;
-import org.springframework.util.CollectionUtils;
-
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
@@ -34,37 +12,18 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class FileObs {
+import java.io.*;
+import java.nio.file.*;
+import java.nio.file.WatchEvent.Kind;
+import java.util.Date;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-	/**
-	 * Returns an {@link Observable} that uses NIO WatchService (and a dedicated
-	 * thread) to push modify events to an observable that reads and reports new
-	 * lines to a subscriber. The NIO WatchService events are sampled according
-	 * to <code>sampleTimeMs</code> so that lots of discrete activity on a file
-	 * (for example a log file with very frequent entries) does not prompt an
-	 * inordinate number of file reads to pick up changes.
-	 *
-	 * @param file
-	 * @param startPosition
-	 * @param sampleTimeMs
-	 * @return
-	 */
-	public final static Observable<String> tailFile(File file,
-			long startPosition, long sampleTimeMs) {
-		return from(file, StandardWatchEventKinds.ENTRY_CREATE,
-				StandardWatchEventKinds.ENTRY_MODIFY,
-				StandardWatchEventKinds.OVERFLOW)
-		// don't care about the event details, just that there is one
-				.cast(Object.class)
-				
-				// get lines once on subscription so we tail the lines in the
-				// file at startup
-//				.startWith(Event.FILE_EVENT)
-				// emit a max of 1 event per sample period
-				.sample(sampleTimeMs, TimeUnit.MILLISECONDS)
-				// tail file triggered by events
-				.lift(null);
-	}
+
+
+public class FileObs {
+  public Date reference = new Date();
+
 
 	/**
 	 * Returns an {@link Observable} of {@link WatchEvent}s from a
@@ -73,7 +32,7 @@ public class FileObs {
 	 * @param watchService
 	 * @return
 	 */
-	public final static Observable<WatchKey> from(WatchService watchService) {
+	public final Observable<WatchKey> from(WatchService watchService) {
 		return Observable.create(new WatchServiceOnSubscribe(watchService));
 	}
 
@@ -90,56 +49,57 @@ public class FileObs {
 	 * @param kinds
 	 * @return
 	 */
-	private static WatchEvent<?> current = null;
-	
+	private WatchEvent<?> current = null;
+
 	@SafeVarargs
-	public final static Observable<WatchEvent<?>> from(final File file, Kind<?>... kinds) {
-		
+	public final Observable<MonEvent> from(final File file, Kind<?>... kinds) {
+
 		return watchService(file, kinds).flatMap(TO_WATCH_EVENTS).flatMap(new Func1<WatchKey, Observable<WatchEvent<?>>>() {
 
-			@Override
-			public Observable<WatchEvent<?>> call(WatchKey key) {
-				return Observable.create(new OnSubscribe<WatchEvent<?>>() {
+      @Override
+      public Observable<WatchEvent<?>> call(WatchKey key) {
+        return Observable.create(new OnSubscribe<WatchEvent<?>>() {
 
-					@Override
-					public void call(Subscriber<? super WatchEvent<?>> subscriber) {
-						for (WatchEvent<?> event : key.pollEvents()) {
-							subscriber.onNext(event);
-						}
-						
-					}
-					
-				});
-			}
-		}).flatMap(new Func1<WatchEvent, Observable<WatchEvent<?>>>() {
+          @Override
+          public void call(Subscriber<? super WatchEvent<?>> subscriber) {
+            for (WatchEvent<?> event : key.pollEvents()) {
+              subscriber.onNext(event);
+            }
 
-			@Override
-			public Observable<WatchEvent<?>> call(WatchEvent event) {
-				return Observable.create(new OnSubscribe<WatchEvent<?>>() {
-					
-					
-					@Override
-					public void call(Subscriber<? super WatchEvent<?>> subscriber) {
-						//TODO add tempo
-						String s1 = null;
-						if (current != null) {
-							s1 = current.kind().name() + " "  + current.context();
-						}
-						String s2 = event.kind().name() + " "  + event.context();
-						if (current == null) {
-							System.out.println("current is null");
-							current = event;
-							subscriber.onNext(event);
-						} else if (!s2.equals(s1)) {
-							System.out.println("not the same");
-							current = event;
-							subscriber.onNext(event);
-						}						
-					}
-					
-				});
-			}
-		});
+          }
+
+        });
+      }
+		}).filter(new Func1<WatchEvent<?>, Boolean>() {
+      @Override
+      public Boolean call(WatchEvent<?> watchEvent) {
+        Path path = (Path) watchEvent.context();
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*.tx*");
+        return matcher.matches(path);
+      }
+    }).flatMap(new Func1<WatchEvent<?>, Observable<MonEvent>>() {
+      @Override
+      public Observable<MonEvent> call(WatchEvent<?> event) {
+        return Observable.create(new OnSubscribe<MonEvent>() {
+
+          @Override
+          public void call(Subscriber<? super MonEvent> subscriber) {
+            Path name = (Path) event.context();
+            Path basePath = getBasePath(file);
+            Path child = basePath.resolve(name);
+            Kind<?> kind = event.kind();
+
+            MonEvent monEvent = new MonEvent();
+            monEvent.setName(event.context() + "");
+            monEvent.setPath(child);
+            monEvent.setKind(kind);
+
+            subscriber.onNext(monEvent);
+          }
+
+        });
+      }
+    });
 	}
 
 	/**
@@ -151,26 +111,24 @@ public class FileObs {
 	 * @return
 	 */
 	@SafeVarargs
-	public final static Observable<WatchService> watchService(final File file,
-			final Kind<?>... kinds) {
-		return Observable.create(new OnSubscribe<WatchService>() {
-			@Override
-			public void call(Subscriber<? super WatchService> subscriber) {
-				final Path path = getBasePath(file);
-				try {
-					WatchService watchService = path.getFileSystem()
-							.newWatchService();
-					path.register(watchService, kinds);
-					subscriber.onNext(watchService);
-					subscriber.onCompleted();
-				} catch (IOException e) {
-					subscriber.onError(e);
-				}
-			}
-		});
+	public final Observable<WatchService> watchService(final File file, final Kind<?>...kinds){
+      return Observable.create(new OnSubscribe<WatchService>() {
+        @Override
+        public void call(Subscriber<? super WatchService> subscriber) {
+          final Path path = getBasePath(file);
+          try {
+            WatchService watchService = path.getFileSystem().newWatchService();
+            path.register(watchService, kinds);
+            subscriber.onNext(watchService);
+            subscriber.onCompleted();
+          } catch (IOException e) {
+            subscriber.onError(e);
+          }
+        }
+      });
 	}
 
-	private final static Path getBasePath(final File file) {
+	private final Path getBasePath(final File file) {
 		final Path path;
 		if (file.exists() && file.isDirectory())
 			path = Paths.get(file.toURI());
@@ -179,9 +137,9 @@ public class FileObs {
 		return path;
 	}
 
-	
 
-	static class WatchServiceOnSubscribe implements OnSubscribe<WatchKey> {
+
+	class WatchServiceOnSubscribe implements OnSubscribe<WatchKey> {
 		private final WatchService watchService;
 		private final AtomicBoolean subscribed = new AtomicBoolean(true);
 
@@ -205,7 +163,7 @@ public class FileObs {
 		private void emitEvents(Subscriber<? super WatchKey> subscriber) {
 			// get the first event before looping
 			WatchKey key = nextKey(subscriber);
-			
+
 			while (key != null) {
 				subscriber.onNext(key);
 				boolean valid = key.reset();
@@ -252,7 +210,7 @@ public class FileObs {
 		}
 	}
 
-	private final static Subscription createSubscriptionToCloseWatchService(final WatchService watchService, final AtomicBoolean subscribed,
+	private final Subscription createSubscriptionToCloseWatchService(final WatchService watchService, final AtomicBoolean subscribed,
 			final Subscriber<? super WatchKey> subscriber) {
 		return new Subscription() {
 			@Override
@@ -276,58 +234,118 @@ public class FileObs {
 		};
 	}
 
-	private final static Func1<WatchService, Observable<WatchKey>> TO_WATCH_EVENTS = new Func1<WatchService, Observable<WatchKey>>() {
+	private final Func1<WatchService, Observable<WatchKey>> TO_WATCH_EVENTS = new Func1<WatchService, Observable<WatchKey>>() {
 		@Override
 		public Observable<WatchKey> call(WatchService watchService) {
 			return from(watchService);
 		}
 	};
-	
-	
+
+
 	public static void main(String[] args) {
-		File file = new File("C:\\temp_es\\doc");
-		from(file,
-				StandardWatchEventKinds.ENTRY_MODIFY,
-				StandardWatchEventKinds.OVERFLOW,
-				StandardWatchEventKinds.ENTRY_DELETE)
-				.subscribe(
-				new Action1<WatchEvent<?>>() {
+    File file = new File("C:\\temp_es\\doc");
 
-					@Override
-					public void call(WatchEvent<?> event) {
-							System.out.println("------------");
-							Path name = (Path) event.context();
-					        Path basePath = getBasePath(file);
-					        Path child = basePath.resolve(name);
-					        Kind<?> kind = event.kind();
-					        if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-					            System.out.println("Creating file: " + child);
+    final FileObs fileObs = new FileObs();
+    fileObs.from(file, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.OVERFLOW, StandardWatchEventKinds.ENTRY_DELETE)
+            .distinct().subscribe(new Action1<MonEvent>() {
 
-					            boolean isGrowing = false;
-					            Long initialWeight = new Long(0);
-					            Long finalWeight = new Long(0);
+      @Override
+      public void call(MonEvent event) {
+        fileObs.method(event);
+        System.out.println(event);
+      }
+    });
+  }
 
-					            do {
-					                initialWeight = child.toFile().length();
-					                try {
-										Thread.sleep(1000);
-									} catch (InterruptedException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-					                finalWeight = child.toFile().length();
-					                isGrowing = initialWeight < finalWeight;
+  public void method(MonEvent event) {
+    Tika tika = new Tika();
+    try {
+      InputStream fileReader = Files.newInputStream(event.getPath());
 
-					            } while(isGrowing);
+      String content =  tika.parseToString(fileReader);
 
-					            System.out.println("Finished creating file!");
+      Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
+      String json = "{" +
+              "\"title\":\"" + event.getName() + "\"," +
+              "\"postDate\":\"2013-01-30\"," +
+              "\"content\":\"" + content.replace("\r", " ").replace("\n", " ") + "\"," +
+              "\"path\":\"" + event.getPath().toString().replace("\\", "/") + "\"" +
+              "}";
 
-					        }
-							
-					}
-				});
-	}
-	
+      client.prepareIndex("documents", "document", event.getName()).setSource(json).execute();
+      client.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (TikaException e) {
+      e.printStackTrace();
+    }
+    System.out.println(event);
+  }
 
+
+  public class MonEvent {
+    private String name;
+    private Path path;
+    private Kind<?> kind;
+
+    public MonEvent() {
+      super();
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public Kind<?> getKind() {
+      return kind;
+    }
+
+    public void setKind(Kind<?> kind) {
+      this.kind = kind;
+    }
+
+    public Path getPath() {
+      return path;
+    }
+
+    public void setPath(Path path) {
+      this.path = path;
+    }
+
+    @Override
+    public int hashCode() {
+      Date now = new Date();
+      int flag = 0;
+      if (now.getTime() - reference.getTime() > 10000) {
+        flag = new Random().nextInt();
+        reference = now;
+      }
+
+      return name.hashCode() + flag;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj instanceof MonEvent)) {
+        return false;
+      }
+      MonEvent other = (MonEvent) obj;
+
+      return this.name.equals(other.name);
+    }
+
+    @Override
+    public String toString() {
+      return "MonEvent{" +
+              "kind=" + kind +
+              ", name='" + name + '\'' +
+              ", path=" + path +
+              '}';
+    }
+  }
 
 }

@@ -1,25 +1,29 @@
 package fr.charbo.temp;
 
-import java.io.IOException;
-
-import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+
+import java.io.IOException;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class Index {
 	
 	public static void main(String[] args) {
-		Node node = NodeBuilder.nodeBuilder().build().start();
-	
+
+    Client client = new TransportClient()
+            .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
 		try {
 			XContentBuilder source = jsonBuilder().startObject()
-					.field("titre", "Titre 2")
+					.field("titre", "Titre 3")
 					.field("auteur", "Charbonnier").endObject();
-			node.client().prepareIndex("bibli", "livre", "2").setSource(source).execute().actionGet();
-			node.close();
+
+      System.out.println(source.string());
+
+			client.prepareIndex("bibli", "livre", "2").setSource(source).execute().actionGet();
+			client.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -44,11 +44,10 @@
 	</modules>
 
 	<properties>
-		<elasticsearch.version>1.4.0</elasticsearch.version>
-		<tika.version>1.5</tika.version>
-		<poi.version>3.10.1</poi.version>
+		<elasticsearch.version>1.7.0</elasticsearch.version>
+		<tika.version>1.11</tika.version>
+		<poi.version>3.13</poi.version>
 		<lucene.version>4.10.2</lucene.version>
-		<fsriver.version>1.4.0-SNAPSHOT</fsriver.version>
 		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
 		<commons.lang.version>3.3.2</commons.lang.version>
 		<hsql.version>2.3.2</hsql.version>
@@ -91,12 +90,13 @@
 				<artifactId>rxjava</artifactId>
 				<version>1.0.12</version>
 			</dependency>
-			<dependency>
-				<groupId>fr.pilato.elasticsearch.river</groupId>
-				<artifactId>fsriver</artifactId>
-				<version>${fsriver.version}</version>
-			</dependency>
-			<dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
 				<version>${poi.version}</version>

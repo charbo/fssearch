@@ -16,7 +16,7 @@ import fr.charbo.query.result.SearchResult;
 public class ElasticClient implements Client {
 
   /** The Constant DOC. */
-  private static final String DOC = "doc";
+  private static final String DOC = "doccument";
 
   /** The node. */
   private final Node node;
@@ -56,11 +56,12 @@ public class ElasticClient implements Client {
   @Override
   public SearchResult search(final QueryBuilder queryBuilder, final int begin, final int pageSize, final String... rivers) {
     final SearchRequestBuilder searchRequestBuilder =
-        this.node.client().prepareSearch(rivers).setTypes(DOC).setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(queryBuilder)
-        .addField("filename")
-        .addField("url")
-        .addField("author")
-        .setFrom(begin).setSize(pageSize);
+        this.node.client().prepareSearch(rivers).setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(queryBuilder)
+//        .addField("title")
+//        .addField("content")
+//        .addField("path")
+//        .setFrom(begin).setSize(pageSize)
+            ;
     final SearchResponse response = searchRequestBuilder.execute().actionGet();
     return new SearchResult(response.getHits().getTotalHits() ,DocumentBuilder.extractDocuments(response));
   }

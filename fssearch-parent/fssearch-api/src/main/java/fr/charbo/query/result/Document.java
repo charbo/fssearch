@@ -6,11 +6,11 @@ package fr.charbo.query.result;
 public class Document {
 
   /** The title. */
-  @Mapping(key = "file.filename")
+  @Mapping(key = "title")
   private String title;
 
   /** The author. */
-  @Mapping(key = "meta.author")
+//  @Mapping(key = "meta.author")
   private String author;
 
   /** The content. */
@@ -20,7 +20,7 @@ public class Document {
   private String type;
 
   /** The path. */
-  @Mapping(key = "file.url")
+  @Mapping(key = "path")
   private String path;
 
   /**
