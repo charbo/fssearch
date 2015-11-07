@@ -221,3 +221,10 @@ fssearch-parent/fssearch-batch/target/classes/fr/charbo/configuration/Test$3.cla
 fssearch-parent/fssearch-batch/target/classes/fr/charbo/configuration/Test.class
 fssearch-parent/fssearch-dao/fssearch-dao.iml
 fssearch-parent/fssearch-web/fssearch-web.iml
+fssearch-parent/fssearch-batch/.classpath
+fssearch-parent/fssearch-batch/.gitignore
+fssearch-parent/fssearch-batch/.project
+fssearch-parent/fssearch-batch/.settings/org.eclipse.core.resources.prefs
+fssearch-parent/fssearch-batch/.settings/org.eclipse.jdt.core.prefs
+fssearch-parent/fssearch-batch/.settings/org.eclipse.m2e.core.prefs
+fssearch-parent/npm-debug.log

@@ -3,16 +3,17 @@ package fr.charbo.server.impl;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import fr.charbo.client.SearchClient;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.node.Node;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.NodeBuilder;
 
-import fr.charbo.client.Client;
 import fr.charbo.client.ElasticClient;
-import fr.charbo.server.River;
 import fr.charbo.server.Server;
 
 /**
@@ -20,49 +21,23 @@ import fr.charbo.server.Server;
  */
 public class ElasticServer implements Server {
 
-  /** The node. */
-  private final Node node;
-
-  /** The client. */
-  private final Client client;
+  /** The searchClient. */
+  private final SearchClient searchClient;
 
   /** The is running. */
   private boolean isRunning;
 
+  private Client client;
+
   /**
    * Instantiates a new elastic server.
    *
-   * @param path the path
+   * @param url the client url
    */
-  public ElasticServer(final String path) {
-    this.node = NodeBuilder.nodeBuilder().settings(ImmutableSettings.builder().put("path.data", path).build()).node();
+  public ElasticServer(final String url) {
+    this.client = new TransportClient().addTransportAddress(new InetSocketTransportAddress(url, 9300));
     this.isRunning = true;
-    this.client = new ElasticClient(this.node);
-  }
-
-  /* (non-Javadoc)
-   * @see fr.charbo.server.Server#addRiver(fr.charbo.server.River)
-   */
-  @Override
-  public IndexResponse addRiver(final River river) throws ElasticsearchException, IOException {
-    return this.node.client().prepareIndex("_river", river.getName(), "_meta").setSource(river.getXContentBuilder()).execute().actionGet();
-
-  }
-
-  /* (non-Javadoc)
-   * @see fr.charbo.server.Server#updateRiver(fr.charbo.server.River)
-   */
-  @Override
-  public River updateRiver(final River river) throws InterruptedException, ExecutionException, IOException {
-    //TODO update rivers
-    final UpdateRequest updateRequest = new UpdateRequest();
-    updateRequest.index("_river");
-    updateRequest.type(river.getName());
-    updateRequest.id("_meta");
-    updateRequest.doc(river.getXContentBuilder());
-    this.node.client().update(updateRequest).get();
-    //    TODO use IndexResponse as return type
-    return null;
+    this.searchClient = new ElasticClient(this.client);
   }
 
 
@@ -80,16 +55,15 @@ public class ElasticServer implements Server {
    */
   @Override
   public void close() {
-    this.node.close();
+    this.client.close();
     this.isRunning = false;
   }
 
   /* (non-Javadoc)
-   * @see fr.charbo.server.Server#getClient()
+   * @see fr.charbo.server.Server#getSearchClient()
    */
-  @Override
-  public Client getClient() {
-    return this.client;
+  public SearchClient getSearchClient() {
+    return this.searchClient;
   }
 
 }

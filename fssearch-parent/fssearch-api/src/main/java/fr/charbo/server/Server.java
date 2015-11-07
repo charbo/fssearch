@@ -3,10 +3,9 @@ package fr.charbo.server;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import fr.charbo.client.SearchClient;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.index.IndexResponse;
-
-import fr.charbo.client.Client;
 
 /**
  * The Interface Server.
@@ -27,28 +26,7 @@ public interface Server {
    *
    * @return the client
    */
-  Client getClient();
-
-  /**
-   * Adds the river.
-   *
-   * @param river the river
-   * @return the index response
-   * @throws ElasticsearchException the elasticsearch exception
-   * @throws IOException Signals that an I/O exception has occurred.
-   */
-  IndexResponse addRiver(River river) throws ElasticsearchException, IOException;
-
-  /**
-   * Update river.
-   *
-   * @param river the river
-   * @return the river
-   * @throws ExecutionException
-   * @throws InterruptedException
-   * @throws IOException
-   */
-  River updateRiver(River river) throws InterruptedException, ExecutionException, IOException;
+  SearchClient getSearchClient();
 
   /**
    * Close the Node.
