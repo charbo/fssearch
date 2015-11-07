@@ -5,57 +5,41 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHitField;
+
+import java.util.Map;
 
 public class Query {
 
   public static void main(final String[] args) {
-    Node node = null;
-    try {
-      node = NodeBuilder.nodeBuilder().node();
-      final Client client = node.client();
+    Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
+      SearchResponse response = client.prepareSearch("documents")
+              .setTypes("document")
+              .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+              .setQuery(QueryBuilders.termQuery("title", "gael.txt"))             // Query
+              .addField("content")
+              .addField("title")
+              .addField("path")
+              .execute()
+              .actionGet();
 
-      QueryBuilders.boolQuery().must(QueryBuilders.fuzzyQuery("content", "corps"));
-
-
-
-      Requests.countRequest(QueryBuilders.termQuery("content", "corps").toString());
-      final CountResponse res = client.prepareCount("name").setTypes("doc").setQuery(QueryBuilders.termQuery("content", "corps")).execute().actionGet();
-
-      System.out.println("-----------------");
-      System.out.println(res.getCount());
-
-
-      final SearchResponse response = client.prepareSearch("name")
-          .setTypes("doc")
-          .setSearchType(SearchType.DEFAULT)
-          .setQuery(QueryBuilders.termQuery("content", "corps"))
-          //		        .setQuery(QueryBuilders.termQuery("author", "charbonnier"))             // Query
-          //		        .setPostFilter(FilterBuilders.rangeFilter("age").from(12).to(18))   // Filter
-          .addField("content")
-          .addField("url")
-          .setFrom(0).setSize(60).setExplain(true)
-          .execute()
-          .actionGet();
-
-      System.out.println("-----------");
-      //		System.out.println(response);
 
       for (final SearchHit hit : response.getHits()) {
-
-        System.out.println(hit.getScore());
-        System.out.println(hit.getFields().get("file.url").values());
-        System.out.println(hit.getSourceAsString());
+          System.out.println(hit.getScore());
+          System.out.println("-----");
+          for (Map.Entry<String, SearchHitField> entry : hit.getFields().entrySet()) {
+              System.out.println(entry.getKey());
+              System.out.println(entry.getValue().getValue() + "");
+          }
+          System.out.println("-----");
+          System.out.println(hit.getSourceAsString());
       }
-
-    } finally {
-      if (node != null) {
-        node.close();
-      }
-    }
   }
 
 

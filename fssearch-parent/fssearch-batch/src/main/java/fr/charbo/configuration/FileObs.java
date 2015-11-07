@@ -243,7 +243,7 @@ public class FileObs {
 
 
 	public static void main(String[] args) {
-    File file = new File("C:\\temp_es\\doc");
+    File file = new File("D:\\GAEL\\tests");
 
     final FileObs fileObs = new FileObs();
     fileObs.from(file, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.OVERFLOW, StandardWatchEventKinds.ENTRY_DELETE)
@@ -272,7 +272,7 @@ public class FileObs {
               "\"path\":\"" + event.getPath().toString().replace("\\", "/") + "\"" +
               "}";
 
-      client.prepareIndex("documents", "document", event.getName()).setSource(json).execute();
+      client.prepareIndex("documents", "document", event.getName().hashCode() + "").setSource(json).execute();
       client.close();
     } catch (IOException e) {
       e.printStackTrace();
