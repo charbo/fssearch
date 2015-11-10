@@ -1,5 +1,6 @@
 package fr.charbo.configuration;
 
+import com.google.gson.Gson;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.elasticsearch.client.Client;
@@ -12,7 +13,9 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Date;
@@ -22,7 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class FileObs {
-  public Date reference = new Date();
+  private Date reference = new Date();
+
+  private Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
 
 
 	/**
@@ -243,7 +248,7 @@ public class FileObs {
 
 
 	public static void main(String[] args) {
-    File file = new File("D:\\GAEL\\tests");
+    File file = new File("C:\\temp_es\\doc");
 
     final FileObs fileObs = new FileObs();
     fileObs.from(file, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.OVERFLOW, StandardWatchEventKinds.ENTRY_DELETE)
@@ -251,37 +256,83 @@ public class FileObs {
 
       @Override
       public void call(MonEvent event) {
-        fileObs.method(event);
-        System.out.println(event);
+         if (event.getKind() == StandardWatchEventKinds.ENTRY_DELETE) {
+          fileObs.deleteDocument(event);
+        } else if (event.getKind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+          fileObs.updateDocument(event);
+        }
       }
     });
   }
 
-  public void method(MonEvent event) {
+  private void deleteDocument(MonEvent event) {
+    client.prepareDelete("documents", "document", event.getName().hashCode() + "").execute();
+  }
+
+  public void updateDocument(MonEvent event) {
     Tika tika = new Tika();
     try {
       InputStream fileReader = Files.newInputStream(event.getPath());
 
       String content =  tika.parseToString(fileReader);
-
-      Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
-      String json = "{" +
-              "\"title\":\"" + event.getName() + "\"," +
-              "\"postDate\":\"2013-01-30\"," +
-              "\"content\":\"" + content.replace("\r", " ").replace("\n", " ") + "\"," +
-              "\"path\":\"" + event.getPath().toString().replace("\\", "/") + "\"" +
-              "}";
-
+      Document document = new Document(event);
+      document.setContent(content);
+      Gson gson = new Gson();
+      String json = gson.toJson(document);
+      System.out.println(json);
       client.prepareIndex("documents", "document", event.getName().hashCode() + "").setSource(json).execute();
-      client.close();
     } catch (IOException e) {
       e.printStackTrace();
     } catch (TikaException e) {
       e.printStackTrace();
     }
-    System.out.println(event);
   }
 
+
+  public class Document {
+    private String title;
+    private String content;
+    private String path;
+    private Date date;
+
+    public Document(MonEvent monEvent) {
+      this.title = monEvent.getName();
+      this.path = monEvent.getPath().toString();
+      this.date = new Date();
+    }
+
+    public String getContent() {
+      return content;
+    }
+
+    public void setContent(String content) {
+      this.content = content;
+    }
+
+    public Date getDate() {
+      return date;
+    }
+
+    public void setDate(Date date) {
+      this.date = date;
+    }
+
+    public String getPath() {
+      return path;
+    }
+
+    public void setPath(String path) {
+      this.path = path;
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public void setTitle(String title) {
+      this.title = title;
+    }
+  }
 
   public class MonEvent {
     private String name;
@@ -320,7 +371,7 @@ public class FileObs {
     public int hashCode() {
       Date now = new Date();
       int flag = 0;
-      if (now.getTime() - reference.getTime() > 10000) {
+      if (getKind() == StandardWatchEventKinds.ENTRY_DELETE || now.getTime() - reference.getTime() > 10000) {
         flag = new Random().nextInt();
         reference = now;
       }
