@@ -1,5 +1,6 @@
 package fr.charbo.query;
 
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
@@ -37,7 +38,7 @@ public class ContentField extends AbstractQueryField implements QueryField {
    */
   @Override
   public QueryBuilder getFuzzyBuilder() {
-    return QueryBuilders.fuzzyQuery(FIELD_NAME, this.value);
+    return QueryBuilders.fuzzyQuery(FIELD_NAME, this.value).fuzziness(Fuzziness.TWO);
   }
 
 }

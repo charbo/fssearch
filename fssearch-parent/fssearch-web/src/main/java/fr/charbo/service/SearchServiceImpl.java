@@ -1,18 +1,17 @@
 package fr.charbo.service;
 
-import java.io.IOException;
-import java.util.List;
-
+import fr.charbo.query.ContentField;
+import fr.charbo.query.TitleField;
+import fr.charbo.query.result.Document;
+import fr.charbo.server.SearchEngine;
 import fr.charbo.server.impl.SearchEngineImpl;
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import fr.charbo.query.ContentField;
-import fr.charbo.query.result.Document;
-import fr.charbo.server.SearchEngine;
+import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -39,15 +38,14 @@ public class SearchServiceImpl implements SearchService {
   /**
    * Search.
    *
-   * @param query the query
+   * @param expression the expression
    * @return the list
    */
   @Override
-  public List<Document> search(final String query) {
-    //TODO
-    final ContentField content = new ContentField(query);
-    
-    return this.searchEngine.search(QueryBuilders.fuzzyLikeThisQuery().likeText(query)).getDocuments();
+  public List<Document> search(final String expression) {
+    final ContentField content = new ContentField(expression);
+    final TitleField title = new TitleField(content, expression);
+    return this.searchEngine.search(title.getFuzzyBuilder()).getDocuments();
   }
 
 

@@ -1,17 +1,13 @@
 package fr.charbo.query;
 
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 
 /**
  * The Class DateField.
  */
-public class DateField extends AbstractQueryField implements QueryField {
+public class DateField extends AbstractDecoratedQueryField implements QueryField {
   /** The Constant FIELD_NAME. */
   private static final String FIELD_NAME = "date";
-
-  /** The query field. */
-  private final QueryField queryField;
 
   /**
    * Instantiates a new date field.
@@ -20,8 +16,7 @@ public class DateField extends AbstractQueryField implements QueryField {
    * @param value the value
    */
   public DateField(final QueryField queryField, final Object value) {
-    super(value);
-    this.queryField = queryField;
+    super(queryField, value);
   }
 
   /* (non-Javadoc)
@@ -29,7 +24,7 @@ public class DateField extends AbstractQueryField implements QueryField {
    */
   @Override
   public QueryBuilder getQueryBuilder() {
-    return QueryBuilders.boolQuery().must(QueryBuilders.termQuery(FIELD_NAME, this.value)).must(this.queryField.getQueryBuilder());
+    return super.getQueryBuilder();
   }
 
   /* (non-Javadoc)
@@ -37,7 +32,11 @@ public class DateField extends AbstractQueryField implements QueryField {
    */
   @Override
   public QueryBuilder getFuzzyBuilder() {
-    return QueryBuilders.boolQuery().must(QueryBuilders.fuzzyQuery(FIELD_NAME, this.value)).must(this.queryField.getFuzzyBuilder());
+    return super.getFuzzyBuilder();
   }
 
+  @Override
+  protected String getFieldName() {
+    return FIELD_NAME;
+  }
 }

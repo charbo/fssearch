@@ -1,7 +1,7 @@
 package fr.charbo.query;
 
 
-public abstract class AbstractQueryField implements QueryField {
+public abstract class AbstractQueryField {
 
   protected final Object value;
 

@@ -50,15 +50,7 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
         </dependency>
-        <!--Dependency for parsing remote ssh directory [http://www.jcraft.com/jsch/] -->
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
+
 
         <!-- === Commons === -->
         <dependency>
