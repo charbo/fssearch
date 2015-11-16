@@ -38,9 +38,9 @@
 
 	<modules>
 		<module>fssearch-dao</module>
-		<module>fssearch-api</module>
+		<module>fssearch-search</module>
 		<module>fssearch-web</module>
-		<module>fssearch-batch</module>
+		<module>fssearch-index</module>
 	</modules>
 
 	<properties>

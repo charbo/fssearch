@@ -1,20 +1,11 @@
 package fr.charbo.server.impl;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
+import fr.charbo.client.ElasticClient;
 import fr.charbo.client.SearchClient;
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.update.UpdateRequest;
+import fr.charbo.server.Server;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.node.NodeBuilder;
-
-import fr.charbo.client.ElasticClient;
-import fr.charbo.server.Server;
 
 /**
  * The Class ElasticServer.

@@ -7,8 +7,8 @@
         <artifactId>fssearch</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>fssearch-api</artifactId>
-    <name>fssearch - api</name>
+    <artifactId>fssearch-search</artifactId>
+    <name>fssearch - search</name>
     <description>TODO</description>
 
     <dependencies>

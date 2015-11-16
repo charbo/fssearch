@@ -1,8 +1,6 @@
-package fr.charbo.configuration;
+package fr.charbo.index;
 
-import com.google.gson.Gson;
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
+import fr.charbo.index.bean.Document;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -15,7 +13,6 @@ import rx.functions.Func1;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.WatchEvent.Kind;
 import java.util.Date;
@@ -24,11 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 
-public class FileObs {
+public class FileSystemObservable {
   private Date reference = new Date();
-
-  private Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
-
 
 	/**
 	 * Returns an {@link Observable} of {@link WatchEvent}s from a
@@ -57,7 +51,7 @@ public class FileObs {
 	private WatchEvent<?> current = null;
 
 	@SafeVarargs
-	public final Observable<MonEvent> from(final File file, Kind<?>... kinds) {
+	public final Observable<DocumentObserved> from(final File file, Kind<?>... kinds) {
 
 		return watchService(file, kinds).flatMap(TO_WATCH_EVENTS).flatMap(new Func1<WatchKey, Observable<WatchEvent<?>>>() {
 
@@ -82,24 +76,24 @@ public class FileObs {
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*.tx*");
         return matcher.matches(path);
       }
-    }).flatMap(new Func1<WatchEvent<?>, Observable<MonEvent>>() {
+    }).flatMap(new Func1<WatchEvent<?>, Observable<DocumentObserved>>() {
       @Override
-      public Observable<MonEvent> call(WatchEvent<?> event) {
-        return Observable.create(new OnSubscribe<MonEvent>() {
+      public Observable<DocumentObserved> call(WatchEvent<?> event) {
+        return Observable.create(new OnSubscribe<DocumentObserved>() {
 
           @Override
-          public void call(Subscriber<? super MonEvent> subscriber) {
+          public void call(Subscriber<? super DocumentObserved> subscriber) {
             Path name = (Path) event.context();
             Path basePath = getBasePath(file);
             Path child = basePath.resolve(name);
             Kind<?> kind = event.kind();
 
-            MonEvent monEvent = new MonEvent();
-            monEvent.setName(event.context() + "");
-            monEvent.setPath(child);
-            monEvent.setKind(kind);
+            DocumentObserved documentObserved = new DocumentObserved();
+            documentObserved.setName(event.context() + "");
+            documentObserved.setPath(child);
+            documentObserved.setKind(kind);
 
-            subscriber.onNext(monEvent);
+            subscriber.onNext(documentObserved);
           }
 
         });
@@ -144,7 +138,7 @@ public class FileObs {
 
 
 
-	class WatchServiceOnSubscribe implements OnSubscribe<WatchKey> {
+	private class WatchServiceOnSubscribe implements OnSubscribe<WatchKey> {
 		private final WatchService watchService;
 		private final AtomicBoolean subscribed = new AtomicBoolean(true);
 
@@ -179,7 +173,6 @@ public class FileObs {
 					return;
 				key = nextKey(subscriber);
 			}
-//			subscriber.onNext(key);
 		}
 
 		private WatchKey nextKey(Subscriber<? super WatchKey> subscriber) {
@@ -247,99 +240,47 @@ public class FileObs {
 	};
 
 
-	public static void main(String[] args) {
+  private class ActionIndex implements Action1<DocumentObserved> {
+    private FileIndexer fileIndexer;
+
+    public ActionIndex(Client client) {
+      this.fileIndexer = new FileIndexer(client);
+    }
+
+    @Override
+    public void call(DocumentObserved event) {
+      Document document = new Document();
+      document.setPath(event.getPath().toString());
+      document.setTitle(event.getName());
+      if (event.getKind() == StandardWatchEventKinds.ENTRY_DELETE) {
+        fileIndexer.deleteDocument(document);
+      } else if (event.getKind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+        fileIndexer.updateDocument(document);
+      }
+    }
+  }
+
+  public void subscribeActionIndex(File file, Client client) {
+    from(file, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.OVERFLOW, StandardWatchEventKinds.ENTRY_DELETE)
+    .distinct().subscribe(new ActionIndex(client));
+  }
+
+  public static void main(String[] args) {
     File file = new File("C:\\temp_es\\doc");
 
-    final FileObs fileObs = new FileObs();
-    fileObs.from(file, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.OVERFLOW, StandardWatchEventKinds.ENTRY_DELETE)
-            .distinct().subscribe(new Action1<MonEvent>() {
-
-      @Override
-      public void call(MonEvent event) {
-         if (event.getKind() == StandardWatchEventKinds.ENTRY_DELETE) {
-          fileObs.deleteDocument(event);
-        } else if (event.getKind() == StandardWatchEventKinds.ENTRY_MODIFY) {
-          fileObs.updateDocument(event);
-        }
-      }
-    });
-  }
-
-  private void deleteDocument(MonEvent event) {
-    client.prepareDelete("documents", "document", event.getName().hashCode() + "").execute();
-  }
-
-  public void updateDocument(MonEvent event) {
-    Tika tika = new Tika();
-    try {
-      InputStream fileReader = Files.newInputStream(event.getPath());
-
-      String content =  tika.parseToString(fileReader);
-      Document document = new Document(event);
-      document.setContent(content);
-      Gson gson = new Gson();
-      String json = gson.toJson(document);
-      System.out.println(json);
-      client.prepareIndex("documents", "document", event.getName().hashCode() + "").setSource(json).execute();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (TikaException e) {
-      e.printStackTrace();
-    }
+    Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
+    final FileSystemObservable fileSystemObservable = new FileSystemObservable();
+    fileSystemObservable.subscribeActionIndex(file, client);
   }
 
 
-  public class Document {
-    private String title;
-    private String content;
-    private String path;
-    private Date date;
 
-    public Document(MonEvent monEvent) {
-      this.title = monEvent.getName();
-      this.path = monEvent.getPath().toString();
-      this.date = new Date();
-    }
-
-    public String getContent() {
-      return content;
-    }
-
-    public void setContent(String content) {
-      this.content = content;
-    }
-
-    public Date getDate() {
-      return date;
-    }
-
-    public void setDate(Date date) {
-      this.date = date;
-    }
-
-    public String getPath() {
-      return path;
-    }
-
-    public void setPath(String path) {
-      this.path = path;
-    }
-
-    public String getTitle() {
-      return title;
-    }
-
-    public void setTitle(String title) {
-      this.title = title;
-    }
-  }
-
-  public class MonEvent {
+  private class DocumentObserved {
     private String name;
     private Path path;
-    private Kind<?> kind;
+    private WatchEvent.Kind<?> kind;
 
-    public MonEvent() {
+    public DocumentObserved() {
       super();
     }
 
@@ -351,11 +292,11 @@ public class FileObs {
       this.name = name;
     }
 
-    public Kind<?> getKind() {
+    public WatchEvent.Kind<?> getKind() {
       return kind;
     }
 
-    public void setKind(Kind<?> kind) {
+    public void setKind(WatchEvent.Kind<?> kind) {
       this.kind = kind;
     }
 
@@ -381,10 +322,10 @@ public class FileObs {
 
     @Override
     public boolean equals(Object obj) {
-      if (obj == null || !(obj instanceof MonEvent)) {
+      if (obj == null || !(obj instanceof DocumentObserved)) {
         return false;
       }
-      MonEvent other = (MonEvent) obj;
+      DocumentObserved other = (DocumentObserved) obj;
 
       return this.name.equals(other.name);
     }
@@ -398,5 +339,6 @@ public class FileObs {
               '}';
     }
   }
+
 
 }

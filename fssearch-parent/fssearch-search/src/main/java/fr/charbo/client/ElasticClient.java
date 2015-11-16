@@ -1,16 +1,13 @@
 package fr.charbo.client;
 
+import fr.charbo.query.result.DocumentBuilder;
+import fr.charbo.query.result.SearchResult;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.Node;
-
-import fr.charbo.query.result.DocumentBuilder;
-import fr.charbo.query.result.SearchResult;
 
 /**
  * The Class ElasticClient.
@@ -67,7 +64,7 @@ public class ElasticClient implements SearchClient {
                     .addField("path")
                     ;
     final SearchResponse response = searchRequestBuilder.execute().actionGet();
-    return new SearchResult(response.getHits().getTotalHits() ,DocumentBuilder.extractDocuments(response));
+    return new SearchResult(response.getHits().getTotalHits(), DocumentBuilder.extractDocuments(response));
   }
 
 

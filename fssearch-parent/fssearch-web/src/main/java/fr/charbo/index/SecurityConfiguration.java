@@ -1,4 +1,4 @@
-package fr.charbo.configuration;
+package fr.charbo.index;
 
 import java.io.IOException;
 

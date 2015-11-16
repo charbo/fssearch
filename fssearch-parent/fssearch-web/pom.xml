@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>fr.charbo</groupId>
-            <artifactId>fssearch-api</artifactId>
+            <artifactId>fssearch-search</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

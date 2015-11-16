@@ -1,4 +1,4 @@
-package fr.charbo.configuration;
+package fr.charbo.index;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;

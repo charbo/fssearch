@@ -1,7 +1,7 @@
 package fr.charbo.repository;
 
 
-import fr.charbo.configuration.DataBaseConfiguration;
+import fr.charbo.index.DataBaseConfiguration;
 import fr.charbo.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
