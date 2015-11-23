@@ -9,12 +9,6 @@ public class Document implements Serializable {
   private String path;
   private Date date;
 
-//  public Document(FileSystemObservable.MonEvent monEvent) {
-//    this.title = monEvent.getName();
-//    this.path = monEvent.getPath().toString();
-//    this.date = new Date();
-//  }
-
   public String getContent() {
     return content;
   }
