@@ -271,11 +271,11 @@ public class FileSystemObservableImpl implements FileSystemObservable {
     .distinct().subscribe(new ActionIndex());
   }
 
-  public static void main(final String[] args) {
-    Path path = Paths.get(new File("C:\\temp_es\\doc\\").toURI());
-    FileIndexer fileIndexer = new FileIndexerImpl("127.0.0.1");
-    new FileSystemObservableImpl(fileIndexer).subscribeActionIndex(path);
-  }
+//  public static void main(final String[] args) {
+//    Path path = Paths.get(new File("C:\\temp_es\\doc\\").toURI());
+//    FileIndexer fileIndexer = new FileIndexerImpl("127.0.0.1");
+//    new FileSystemObservableImpl(fileIndexer).subscribeActionIndex(path);
+//  }
 
   private class DocumentObserved {
     private String name;

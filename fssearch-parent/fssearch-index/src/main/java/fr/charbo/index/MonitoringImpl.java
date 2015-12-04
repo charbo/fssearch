@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.File;
 
 @Component
 public class MonitoringImpl implements Monitoring {
@@ -29,9 +30,14 @@ public class MonitoringImpl implements Monitoring {
     root = Paths.get(new File(path).toURI());
   }
 
+  @PostConstruct
+  public void onStartup() {
+    launchIndexation();
+  }
+
 
   @Override
-  @Scheduled(fixedRate = 500000)
+  @Scheduled(cron="0 0 0 * * ?")
   public void launchIndexation() {
     LOG.info("launch indexation");
     if (Files.isDirectory(root)) {
