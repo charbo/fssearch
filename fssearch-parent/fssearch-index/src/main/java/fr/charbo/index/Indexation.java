@@ -30,8 +30,13 @@ public class Indexation {
   public static void main(final String[] args) {
     final ApplicationContext context = SpringApplication.run(Indexation.class, args);
     final Environment environment = context.getEnvironment();
-    String path = environment.getProperty("fssearch.file.path");
+    String pathsDef = environment.getProperty("fssearch.file.paths");
+    
+    String[] paths = pathsDef.split(";"); 
+    
     FileSystemObservable fileSystemObservable = (FileSystemObservable) context.getBean(FileSystemObservable.class);
-    fileSystemObservable.subscribeActionIndex(Paths.get(new File(path).toURI()));
+    for (String path : paths) {
+	    fileSystemObservable.subscribeActionIndex(Paths.get(new File(path).toURI()));
+    }
   }
 }
