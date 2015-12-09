@@ -29,6 +29,7 @@ public class MonitoringImpl implements Monitoring {
   @Autowired
   public MonitoringImpl(FileIndexer fileIndexer, @Value("${fssearch.file.paths}") final String path) {
     this.fileIndexer = fileIndexer;
+    this.pathsDef = path;
   }
 
   @PostConstruct
