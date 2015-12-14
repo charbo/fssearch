@@ -38,7 +38,7 @@ public class ContentField extends AbstractQueryField implements QueryField {
    */
   @Override
   public QueryBuilder getFuzzyBuilder() {
-    return QueryBuilders.fuzzyQuery(FIELD_NAME, this.value).fuzziness(Fuzziness.TWO);
+    return QueryBuilders.matchPhraseQuery(FIELD_NAME, this.value).fuzziness(Fuzziness.TWO);
   }
 
 }

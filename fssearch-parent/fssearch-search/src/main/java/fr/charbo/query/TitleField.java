@@ -17,7 +17,7 @@ public class TitleField extends  AbstractDecoratedQueryField implements QueryFie
 
   @Override
   public QueryBuilder getFuzzyBuilder() {
-    return super.getQueryBuilder();
+    return super.getFuzzyBuilder();
   }
 
   @Override
