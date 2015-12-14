@@ -80,6 +80,8 @@ public class FileSystemObservableImpl implements FileSystemObservable {
       @Override
       public Boolean call(WatchEvent<?> watchEvent) {
         Path path = (Path) watchEvent.context();
+
+        //TODO ne pas indexer les fichier temporaire windows
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*.{tx*,doc*}");
         return matcher.matches(path);
       }

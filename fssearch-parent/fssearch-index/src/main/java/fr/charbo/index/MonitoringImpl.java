@@ -49,6 +49,7 @@ public class MonitoringImpl implements Monitoring {
 	    if (Files.isDirectory(root)) {
 	      try (DirectoryStream<Path> ds = Files.newDirectoryStream(root)) {
 	          for (Path child : ds) {
+              //TODO utiliser les même filtres que pour observable
 	            if (!Files.isDirectory(child)) {
 	              Document document = new Document();
 	              document.setTitle(child.getFileName().toString());
