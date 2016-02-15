@@ -44,19 +44,7 @@ public class FileSystemObservableImpl implements FileSystemObservable {
 		return Observable.create(new WatchServiceOnSubscribe(watchService));
 	}
 
-	/**
-	 * If file does not exist at subscribe time then is assumed to not be a
-	 * directory. If the file is not a directory (bearing in mind the aforesaid
-	 * assumption) then a {@link WatchService} is set up on its parent and
-	 * {@link WatchEvent}s of the given kinds are filtered to concern the file
-	 * in question. If the file is a directory then a {@link WatchService} is
-	 * set up on the directory and all events are passed through of the given
-	 * kinds.
-	 *
-	 * @param file
-	 * @param kinds
-	 * @return
-	 */
+
 	@SafeVarargs
 	private final Observable<DocumentObserved> from(final Path file, Kind<?>... kinds) {
 
@@ -81,9 +69,9 @@ public class FileSystemObservableImpl implements FileSystemObservable {
       public Boolean call(WatchEvent<?> watchEvent) {
         Path path = (Path) watchEvent.context();
 
-        //TODO ne pas indexer les fichier temporaire windows
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*.{tx*,doc*}");
-        return matcher.matches(path);
+        PathMatcher exclude = FileSystems.getDefault().getPathMatcher("glob:~$_*");
+        return matcher.matches(path) && !exclude.matches(path);
       }
     }).flatMap(new Func1<WatchEvent<?>, Observable<DocumentObserved>>() {
       @Override
@@ -123,7 +111,6 @@ public class FileSystemObservableImpl implements FileSystemObservable {
       return Observable.create(new OnSubscribe<WatchService>() {
         @Override
         public void call(Subscriber<? super WatchService> subscriber) {
-//          final Path path = getBasePath(file);
           try {
             WatchService watchService = path.getFileSystem().newWatchService();
             path.register(watchService, kinds);
@@ -186,8 +173,6 @@ public class FileSystemObservableImpl implements FileSystemObservable {
 
 		private WatchKey nextKey(Subscriber<? super WatchKey> subscriber) {
 			try {
-				// this command blocks but unsubscribe close the watch
-				// service and interrupt it
 				return watchService.take();
 			} catch (ClosedWatchServiceException e) {
 				// must have unsubscribed
@@ -195,18 +180,6 @@ public class FileSystemObservableImpl implements FileSystemObservable {
 					subscriber.onCompleted();
 				return null;
 			} catch (InterruptedException e) {
-				// this case is problematic because unsubscribe may call
-				// Thread.interrupt() before calling the unsubscribe method of
-				// the Subscription. Thus at this point we don't know if a
-				// deliberate interrupt was called in which case I would call
-				// onComplete or if unsubscribe was called in which case I
-				// should not call anything. For the moment I choose to not call
-				// anything partly because a deliberate stop of the
-				// watchService.take ignorant of the Observable should ideally
-				// happen via a call to the WatchService.close() method rather
-				// than Thread.interrupt().
-				// TODO raise the issue with RxJava team in particular
-				// Subscriptions.from(Future) calling FutureTask.cancel(true)
 				try {
 					watchService.close();
 				} catch (IOException e1) {
@@ -253,15 +226,17 @@ public class FileSystemObservableImpl implements FileSystemObservable {
 
     @Override
     public void call(DocumentObserved event) {
-      LOG.info("event defected {}", event.getKind());
+      LOG.info("event detected {}", event.getKind());
       Document document = new Document();
       document.setPath(event.getPath().toString());
       document.setTitle(event.getName());
       if (event.getKind() == StandardWatchEventKinds.ENTRY_DELETE) {
         if (Files.notExists( event.getPath())) {
+          LOG.info("delete {}", document.getTitle());
           fileIndexer.deleteDocument(document);
         }
       } else if (event.getKind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+          LOG.info("updqte {}", document.getTitle());
           fileIndexer.indexDocument(document);
       }
     }
@@ -273,11 +248,6 @@ public class FileSystemObservableImpl implements FileSystemObservable {
     .distinct().subscribe(new ActionIndex());
   }
 
-//  public static void main(final String[] args) {
-//    Path path = Paths.get(new File("C:\\temp_es\\doc\\").toURI());
-//    FileIndexer fileIndexer = new FileIndexerImpl("127.0.0.1");
-//    new FileSystemObservableImpl(fileIndexer).subscribeActionIndex(path);
-//  }
 
   private class DocumentObserved {
     private String name;

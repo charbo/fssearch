@@ -13,10 +13,7 @@ import javax.annotation.PostConstruct;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 @Component
 public class MonitoringImpl implements Monitoring {
@@ -49,8 +46,9 @@ public class MonitoringImpl implements Monitoring {
 	    if (Files.isDirectory(root)) {
 	      try (DirectoryStream<Path> ds = Files.newDirectoryStream(root)) {
 	          for (Path child : ds) {
-              //TODO utiliser les même filtres que pour observable
-	            if (!Files.isDirectory(child)) {
+              PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.{tx*,doc*}");
+              PathMatcher exclude = FileSystems.getDefault().getPathMatcher("glob:~$_*");
+	            if (!Files.isDirectory(child) && matcher.matches(child) && !exclude.matches(child)) {
 	              Document document = new Document();
 	              document.setTitle(child.getFileName().toString());
 	              document.setPath(child.toString());
