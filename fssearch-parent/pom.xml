@@ -45,7 +45,7 @@
 
 	<properties>
 		<elasticsearch.version>1.7.0</elasticsearch.version>
-		<tika.version>1.11</tika.version>
+		<tika.version>1.20</tika.version>
 		<poi.version>3.13</poi.version>
 		<lucene.version>4.10.2</lucene.version>
 		<spring.boot.version>1.2.1.RELEASE</spring.boot.version>
